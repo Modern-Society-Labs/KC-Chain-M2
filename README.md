@@ -92,9 +92,9 @@ All datasets are publicly available on Kaggle. Download these datasets to `/sour
 3. **Place Files**: Extract and place CSV files in `source_data/` with exact filenames as shown in table above
 4. **Run Transformations**: Execute `python3 data_transformation/run_all_transformations.py`
 
-## Implementation Details
+## Transformation Details
 
-### Phase 1: Data Transformation (COMPLETED)
+### Data Transformation Overview
 
 #### 1. Environmental Data Fusion
 - **Challenge**: Combine disparate air quality and water quality datasets
@@ -254,26 +254,6 @@ Raw CSV → Privacy Filtering → Unit Conversion → Device ID Generation → S
 - **City Chain Integration**: Authentic local neighborhood deployment
 - **Privacy Compliance**: GDPR-ready anonymization strategies
 - **Owner Scenarios**: Device-level data sovereignty models ready
-
-## Next Steps: Phase 2 Implementation
-
-### L{CORE} Integration (Weeks 3-4)
-- [ ] **SQLite Schema Updates**: Create 6 domain-specific sensor tables
-- [ ] **Cartesi Integration**: Add `owner_address`, `encrypted_data`, `data_hash` fields
-- [ ] **Device Authentication**: W3C DID integration with JWT tokens
-- [ ] **Data Ingestion Pipeline**: CSV → transformation → SQLite validation
-
-### Marketplace Features (Weeks 5-6)
-- [ ] **Owner Access Control**: Device-level data sharing policies
-- [ ] **Consumer Tiers**: Free, paid, and restricted access levels
-- [ ] **GraphQL API**: 6-domain unified query interface
-- [ ] **Cross-Domain Analytics**: Environmental + weather correlation queries
-
-### End-to-End Testing (Weeks 7-8)
-- [ ] **Performance Testing**: Sub-second query response validation
-- [ ] **Security Testing**: Access control and privacy verification
-- [ ] **Demo Scenarios**: Real-world data provider/consumer workflows
-- [ ] **ZK-Proof Analytics**: Anonymized insights generation
 
 ## Project Impact
 
