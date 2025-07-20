@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Log files
+*.log
+
+# Memory Bank (local documentation only)
+memory-bank/
+
+# Integration plan (local documentation only)
+source_data/IoT_DATASET_INTEGRATION_PLAN.md
+
+# Large traffic datasets (>2GB, exceed GitHub limits)
+source_data/Traffic and Weather Datasets/Traffic Datasets/traffic_speed_PeMSD4.csv
+source_data/Traffic and Weather Datasets/Traffic Datasets/traffic_speed_PeMSD7.csv
+
+# Source datasets (available via Kaggle links in README)
+source_data/
