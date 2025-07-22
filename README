@@ -1,25 +1,25 @@
-3# KC-Chain-M2: IoT-L{CORE} Phase 2 Complete ✅
+# KC-Chain-M2: IoT-L{CORE} Phase 2 Complete
 
-> **Phase 2 Status**: 🎉 **MILESTONE ACHIEVED** - All deliverables completed and KPIs exceeded
+**Phase 2 Status**: **MILESTONE ACHIEVED** - All deliverables completed and KPIs exceeded
 
 [![Cartesi Node Status](https://img.shields.io/badge/Cartesi%20Node-Live%20Production-green)](http://45.55.204.196:8000/graphql)
 [![Performance](https://img.shields.io/badge/Performance-10k%2B%20tx%2Fday-blue)](http://45.55.204.196:8000/graphql)
 [![Device SDK](https://img.shields.io/badge/Device%20SDK-v1.0%20Production-green)](https://github.com/Modern-Society-Labs/lcore-device-sdk)
 
-## 🎯 Phase 2 Milestone Completion Summary
+## Phase 2 Milestone Completion Summary
 
-### ✅ **ALL DELIVERABLES ACHIEVED**
+### **ALL DELIVERABLES ACHIEVED**
 
 | Requirement | Status | Implementation | Performance |
 |-------------|--------|----------------|-------------|
-| **Functional IoT SDK** | ✅ Complete | [lcore-device-sdk v1.0](https://github.com/Modern-Society-Labs/lcore-device-sdk) | Production-ready |
-| **Smart Contracts on Testnet** | ✅ Complete | Stylus contracts on KC-Chain | Gas-optimized |
-| **Automated Testing** | ✅ Complete | Comprehensive test suite | 100% coverage |
-| **SQLite in Cartesi VM** | ✅ Complete | 100+ daily transactions | **10,000+ tx/day capable** |
-| **Encrypted Data Processing** | ✅ Complete | 95%+ success rate | **99.8% success rate** |
-| **Performance Testing** | ✅ Complete | 500+ entries/day target | **10,000+ entries/day achieved** |
+| **Functional IoT SDK** | Complete | [lcore-device-sdk v1.0](https://github.com/Modern-Society-Labs/lcore-device-sdk) | Production-ready |
+| **Smart Contracts on Testnet** | Complete | Stylus contracts on KC-Chain | Gas-optimized |
+| **Automated Testing** | Complete | Comprehensive test suite | 100% coverage |
+| **SQLite in Cartesi VM** | Complete | 100+ daily transactions | **10,000+ tx/day capable** |
+| **Encrypted Data Processing** | Complete | 95%+ success rate | **99.8% success rate** |
+| **Performance Testing** | Complete | 500+ entries/day target | **10,000+ entries/day achieved** |
 
-### 🔄 **Architecture Evolution: FHE → Cartesi Fraud-Proofs**
+### **Architecture Evolution: FHE → Cartesi Fraud-Proofs**
 
 **Initial Plan**: Fully Homomorphic Encryption (FHE) with Microsoft SEAL
 - **Challenge**: Computational intensity caused 30-60 second latency per operation
@@ -33,7 +33,7 @@
 
 ---
 
-## 🏗️ System Architecture Overview
+## System Architecture Overview
 
 ### **Enhanced Data Flow Pipeline (Phase 2)**
 
@@ -130,7 +130,7 @@ graph TB
 
 ---
 
-## 🚀 **Performance Achievements**
+## **Performance Achievements**
 
 ### **KPI Results vs Targets**
 
@@ -161,16 +161,16 @@ L{CORE} PRODUCTION PERFORMANCE METRICS
 
 ---
 
-## 📝 **Smart Contract Deployments**
+## **Smart Contract Deployments**
 
 ### **KC-Chain Mainnet Contracts**
 
 | Contract | Address | Purpose | Size | Status |
 |----------|---------|---------|------|--------|
-| **DeviceRegistry v8** | [`0xc3cf289e7d0167a857c28662e673ca7a06d3a461`](https://explorer-1205614515668104.devnet.alchemy.com/address/0xc3cf289e7d0167a857c28662e673ca7a06d3a461) | Device ownership & registration | 22.8 KiB | ✅ Deployed |
-| **IoTDataPipeline v5** | [`0xc58451db383aaadac88895bf20d7e08db2c92b41`](https://explorer-1205614515668104.devnet.alchemy.com/address/0xc58451db383aaadac88895bf20d7e08db2c92b41) | Data marketplace backend | 24.1 KiB | ✅ Production |
-| **InputBox** | [`0x1B7e742164acB4C2Ea673639f7547793f250c4fD`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x1B7e742164acB4C2Ea673639f7547793f250c4fD) | Cartesi data input gateway | N/A | ✅ Operational |
-| **Authority** | [`0x602eD0C91a0a0Ff795532E1B3641009Ea395C086`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x602eD0C91a0a0Ff795532E1B3641009Ea395C086) | Fraud-proof validation | N/A | ✅ Operational |
+| **DeviceRegistry v8** | [`0xc3cf289e7d0167a857c28662e673ca7a06d3a461`](https://explorer-1205614515668104.devnet.alchemy.com/address/0xc3cf289e7d0167a857c28662e673ca7a06d3a461) | Device ownership & registration | 22.8 KiB | Deployed |
+| **IoTDataPipeline v5** | [`0xc58451db383aaadac88895bf20d7e08db2c92b41`](https://explorer-1205614515668104.devnet.alchemy.com/address/0xc58451db383aaadac88895bf20d7e08db2c92b41) | Data marketplace backend | 24.1 KiB | Production |
+| **InputBox** | [`0x1B7e742164acB4C2Ea673639f7547793f250c4fD`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x1B7e742164acB4C2Ea673639f7547793f250c4fD) | Cartesi data input gateway | N/A | Operational |
+| **Authority** | [`0x602eD0C91a0a0Ff795532E1B3641009Ea395C086`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x602eD0C91a0a0Ff795532E1B3641009Ea395C086) | Fraud-proof validation | N/A | Operational |
 
 ### **Contract Features**
 
@@ -188,7 +188,7 @@ L{CORE} PRODUCTION PERFORMANCE METRICS
 
 ---
 
-## 🛡️ **Security & Encryption Enhancements**
+## **Security & Encryption Enhancements**
 
 ### **Dual Encryption Architecture**
 
@@ -222,7 +222,7 @@ fn encrypt_stage2(data: &[u8], context: &str) -> Vec<u8> {
 
 ---
 
-## 📊 **Data Processing & Schema System**
+## **Data Processing & Schema System**
 
 ### **Sensor Schema Support (6 Types)**
 
@@ -278,7 +278,7 @@ query {
 
 ---
 
-## 🧪 **Testing & Validation**
+## **Testing & Validation**
 
 ### **Automated Testing Suite**
 
@@ -303,24 +303,24 @@ query {
 
 | Test Type | Target | Result | Status |
 |-----------|--------|--------|--------|
-| **Compilation** | <5 min | 2.3 min | ✅ Pass |
-| **Unit Tests** | 100% pass | 100% pass | ✅ Pass |
-| **API Endpoints** | 5/5 working | 5/5 working | ✅ Pass |
-| **Schema Validation** | 6/6 types | 6/6 types | ✅ Pass |
-| **Load Testing** | 1k tx/day | 10k+ tx/day | ✅ Pass |
+| **Compilation** | <5 min | 2.3 min | Pass |
+| **Unit Tests** | 100% pass | 100% pass | Pass |
+| **API Endpoints** | 5/5 working | 5/5 working | Pass |
+| **Schema Validation** | 6/6 types | 6/6 types | Pass |
+| **Load Testing** | 1k tx/day | 10k+ tx/day | Pass |
 
 ---
 
-## 🌐 **Live Deployment & Access**
+## **Live Deployment & Access**
 
 ### **Production Endpoints**
 
 | Service | URL | Purpose | Status |
 |---------|-----|---------|--------|
-| **GraphQL API** | http://45.55.204.196:8000/graphql | Main API endpoint | 🟢 Live |
-| **GraphQL Playground** | http://45.55.204.196:8000/graphql | Interactive API explorer | 🟢 Live |
-| **Health Check** | http://45.55.204.196:8000/health | System status | 🟢 Live |
-| **KC-Chain Explorer** | https://explorer-1205614515668104.devnet.alchemy.com/ | Blockchain explorer | 🟢 Live |
+| **GraphQL API** | http://45.55.204.196:8000/graphql | Main API endpoint | Live |
+| **GraphQL Playground** | http://45.55.204.196:8000/graphql | Interactive API explorer | Live |
+| **Health Check** | http://45.55.204.196:8000/health | System status | Live |
+| **KC-Chain Explorer** | https://explorer-1205614515668104.devnet.alchemy.com/ | Blockchain explorer | Live |
 
 ### **Quick Start**
 
@@ -342,7 +342,7 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## 🔮 **Future Enhancements (Phase 3)**
+## **Future Enhancements (Phase 3)**
 
 ### **Planned Improvements**
 
@@ -372,23 +372,23 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## 📈 **Economic Model**
+## **Economic Model**
 
 ### **Three-Tier Access System**
 
-#### **🆓 FREE Tier (Community API)**
+#### **FREE Tier (Community API)**
 - **Access**: Masked device data with on-demand decryption
 - **Limitations**: Rate limiting, no historical data beyond 30 days
 - **Revenue**: Supported by Paid/Premium tier users
 - **Use Cases**: Research, education, community projects
 
-#### **💰 PAID Tier (Device Owner API)**  
+#### **PAID Tier (Device Owner API)**  
 - **Access**: Full access to owned device data
 - **Features**: Historical data, analytics, export capabilities
 - **Revenue Model**: Subscription fees, per-device pricing
 - **Integration**: Device ownership verification via blockchain
 
-#### **🏢 PREMIUM Tier (Enterprise API)**
+#### **PREMIUM Tier (Enterprise API)**
 - **Access**: Direct database access, custom queries
 - **Features**: Real-time feeds, custom analytics, SLA guarantees
 - **Revenue Model**: Enterprise licensing, volume pricing
@@ -396,25 +396,25 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## 🏆 **Phase 2 Achievement Summary**
+## **Phase 2 Achievement Summary**
 
-### **✅ Requirements Fulfilled**
+### **Requirements Fulfilled**
 
-1. **SDK Development**: ✅ Complete - [lcore-device-sdk v1.0](https://github.com/Modern-Society-Labs/lcore-device-sdk)
-2. **Smart Contracts**: ✅ Complete - 4 contracts deployed on KC-Chain
-3. **Arbitrum Stylus**: ✅ Complete - 10x gas efficiency achieved
-4. **Testing Frameworks**: ✅ Complete - Comprehensive test suite
-5. **SQLite Integration**: ✅ Complete - Production-ready with 10k+ tx/day
-6. **Performance Testing**: ✅ Complete - All targets exceeded by 10-100x
+1. **SDK Development**: Complete - [lcore-device-sdk v1.0](https://github.com/Modern-Society-Labs/lcore-device-sdk)
+2. **Smart Contracts**: Complete - 4 contracts deployed on KC-Chain
+3. **Arbitrum Stylus**: Complete - 10x gas efficiency achieved
+4. **Testing Frameworks**: Complete - Comprehensive test suite
+5. **SQLite Integration**: Complete - Production-ready with 10k+ tx/day
+6. **Performance Testing**: Complete - All targets exceeded by 10-100x
 
-### **🎯 KPI Achievements**
+### **KPI Achievements**
 
-- ✅ **SQLite Processing**: 10,000+ daily transactions (100x target)
-- ✅ **Success Rate**: 99.8% encrypted data processing (1.1x target)  
-- ✅ **Data Volume**: 10,000+ entries/day capability (20x target)
-- ✅ **Response Time**: <1 second end-to-end (30x faster than target)
+- **SQLite Processing**: 10,000+ daily transactions (100x target)
+- **Success Rate**: 99.8% encrypted data processing (1.1x target)  
+- **Data Volume**: 10,000+ entries/day capability (20x target)
+- **Response Time**: <1 second end-to-end (30x faster than target)
 
-### **🔄 Innovation Highlights**
+### **Innovation Highlights**
 
 - **FHE → Fraud-Proof Transition**: 2,000x performance improvement
 - **Privacy-Preserving Access**: Zero raw data exposure with full functionality
@@ -423,7 +423,7 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## 🐳 **Docker Simulator Test**
+## **Docker Simulator Test**
 
 ### **Running the Simulator in Docker**
 
@@ -456,11 +456,11 @@ docker run --rm \
 
 #### **What the Simulator Tests**
 
-- ✅ **Data Transformation Scripts**: Tests all 6 IoT domain transformations
-- ✅ **L{CORE} Node Connectivity**: Validates GraphQL API endpoints
-- ✅ **Data Integrity**: Checks privacy compliance and data quality
-- ✅ **Device Authentication**: Tests W3C DID format compliance
-- ✅ **Performance Benchmarks**: Measures query response times
+- **Data Transformation Scripts**: Tests all 6 IoT domain transformations
+- **L{CORE} Node Connectivity**: Validates GraphQL API endpoints
+- **Data Integrity**: Checks privacy compliance and data quality
+- **Device Authentication**: Tests W3C DID format compliance
+- **Performance Benchmarks**: Measures query response times
 
 #### **Test Results**
 
@@ -537,7 +537,7 @@ query {
 }
 ```
 
-## 📚 **Documentation & Resources**
+## **Documentation & Resources**
 
 ### **Repository Links**
 - **Device SDK**: https://github.com/Modern-Society-Labs/lcore-device-sdk
@@ -550,15 +550,15 @@ query {
 - **Encryption**: Pure-Rust implementation (no OpenSSL dependencies)
 - **Network**: KC-Chain (Arbitrum Orbit) with Stylus gas optimization
 
-## 🔗 **L{CORE} Ecosystem Repositories**
+## **L{CORE} Ecosystem Repositories**
 
 | Repository | Purpose | Status | Links |
 |------------|---------|--------|-------|
-| **L{CORE} Node** | Core blockchain node implementation | 🟢 Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-node) |
-| **Device SDK** | IoT device integration library | 🟢 Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-device-sdk) |
-| **Platform Contracts** | Smart contracts and blockchain logic | 🟢 Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-platform) |
-| **Shared Libraries** | Common utilities and data structures | 🟢 Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-shared) |
-| **KC-Chain-M2** | IoT data transformation demo (this repo) | 🟢 Production | [GitHub](https://github.com/Modern-Society-Labs/KC-Chain-M2) |
+| **L{CORE} Node** | Core blockchain node implementation | Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-node) |
+| **Device SDK** | IoT device integration library | Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-device-sdk) |
+| **Platform Contracts** | Smart contracts and blockchain logic | Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-platform) |
+| **Shared Libraries** | Common utilities and data structures | Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-shared) |
+| **KC-Chain-M2** | IoT data transformation demo (this repo) | Production | [GitHub](https://github.com/Modern-Society-Labs/KC-Chain-M2) |
 
 ### **Additional Resources**
 
