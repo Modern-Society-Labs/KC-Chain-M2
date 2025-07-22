@@ -46,6 +46,9 @@ Thumbs.db
 # Memory Bank (local documentation only)
 memory-bank/
 
+# Archive directory (local files only)
+archive/
+
 # Integration plan (local documentation only)
 source_data/IoT_DATASET_INTEGRATION_PLAN.md
 

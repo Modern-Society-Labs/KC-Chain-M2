@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project implements a **comprehensive multi-domain repo for IoT testing data** by transforming **6 diverse real-world datasets** into a unified L{CORE} ecosystem. The implementation creates a privacy-compliant, scalable IoT data sharing platform.
+This project implements a **comprehensive multi-domain IoT data warehouse** by transforming **6 diverse real-world datasets** into a unified L{CORE} ecosystem. The implementation creates a privacy-compliant, scalable IoT data sharing platform.
 
 ## Project Purpose
 
