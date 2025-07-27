@@ -564,4 +564,4 @@ query {
 
 - **IoT Data Transformation Details**: [L{CORE} Shared Repository](https://github.com/Modern-Society-Labs/lcore-shared)
 - **Blockchain Explorer**: [KC-Chain Explorer](https://explorer-1205614515668104.devnet.alchemy.com/)
-- **Live API Endpoint**: [GraphQL Playground](http://45.55.204.196:8000/graphql)
+- **Live API Endpoint**: [Railway Project](https://railway.com/invite/LEHyQkPAnPD)
