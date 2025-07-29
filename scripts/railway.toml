@@ -1,8 +1,8 @@
 [build]
-builder = "NIXPACKS"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "python3 continuous_simulation_service.py --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
@@ -10,4 +10,3 @@ restartPolicyMaxRetries = 10
 
 [env]
 PYTHONUNBUFFERED = "1"
-NIXPACKS_PYTHON_VERSION = "3.11"

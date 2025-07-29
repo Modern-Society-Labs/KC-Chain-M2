@@ -31,7 +31,7 @@ import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-import pandas as pd
+# import pandas as pd  # Not needed for Railway deployment
 import aiohttp
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 def safe_int_convert(value, default=0):
     """Safely convert value to int, handling NaN"""
     try:
-        if pd.isna(value):
+        if value is None or str(value).strip() == '':
             return default
         return int(float(value))
     except (ValueError, TypeError):
@@ -56,7 +56,7 @@ def safe_int_convert(value, default=0):
 def safe_float_convert(value, default=0.0):
     """Safely convert value to float, handling NaN"""
     try:
-        if pd.isna(value):
+        if value is None or str(value).strip() == '':
             return default
         return float(value)
     except (ValueError, TypeError):
@@ -158,34 +158,63 @@ class LCoreContinuousSimulator:
         logger.info(f"Total records available: {total_records}")
         
     def _load_wallet_mappings(self) -> Dict[str, Dict[str, str]]:
-        """Load wallet-device mappings from CSV"""
+        """Load wallet-device mappings from CSV or use hardcoded demo data"""
         import csv
         import os
         
+        # Try to load from CSV first (for local development)
         wallet_file = "wallet_device_mapping.csv"
-        if not os.path.exists(wallet_file):
-            logger.warning(f"Wallet mapping file {wallet_file} not found. Creating wallets...")
-            # Generate wallets first
-            os.system("python3 scripts/create_wallet_device_mapping.py")
+        if os.path.exists(wallet_file):
+            device_to_wallet = {}
+            try:
+                with open(wallet_file, 'r') as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        if row['device_id']:  # Skip empty device rows
+                            device_to_wallet[row['device_id']] = {
+                                'address': row['wallet_address'],
+                                'private_key': row['private_key'],
+                                'wallet_id': row['wallet_id']
+                            }
+                
+                logger.info(f"Loaded {len(device_to_wallet)} device-wallet mappings from CSV")
+                return device_to_wallet
+                
+            except Exception as e:
+                logger.error(f"Failed to load wallet mappings from CSV: {e}")
         
-        device_to_wallet = {}
-        try:
-            with open(wallet_file, 'r') as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    if row['device_id']:  # Skip empty device rows
-                        device_to_wallet[row['device_id']] = {
-                            'address': row['wallet_address'],
-                            'private_key': row['private_key'],
-                            'wallet_id': row['wallet_id']
-                        }
-            
-            logger.info(f"Loaded {len(device_to_wallet)} device-wallet mappings")
-            return device_to_wallet
-            
-        except Exception as e:
-            logger.error(f"Failed to load wallet mappings: {e}")
-            return {}
+        # Use hardcoded demo data for Railway deployment
+        logger.warning("CSV file not found, using hardcoded demo wallet mappings")
+        demo_wallets = {
+            'did:lcore:health-tracker-3': {
+                'address': '0xaa55889648777CDf8283309334cfe35C0474865d',
+                'private_key': '0xf749e0f461492f2ca974c2ac67173df1dd46f921a02a59e69206c816247aaade',
+                'wallet_id': 'wallet_001'
+            },
+            'did:lcore:retail-midtown-store-3': {
+                'address': '0x15b7BE86B61DBa0eb5e25d182c6370a791D8F5de',
+                'private_key': '0x21592e27c0975f68dae085d48f9c51332f086d0af2e1b745c8e2e22f54c70e82',
+                'wallet_id': 'wallet_002'
+            },
+            'did:lcore:cell-tower-tower-7': {
+                'address': '0xF80812f759FF5308EE144845B3c978E437AEFe3b',
+                'private_key': '0xd36295d8c4b376725c53c50bb4b81312ae4989c051fea69506b06a6b6cdc4c0b',
+                'wallet_id': 'wallet_003'
+            },
+            'did:lcore:env-103-air': {
+                'address': '0x15032Fe2413b031b42e33E74b00e823B6EaAD4d4',
+                'private_key': '0xb4a386ef62bfe76786e7085afbecdeb1797b0e97916653647c946dd0fd72ecc9',
+                'wallet_id': 'wallet_005'
+            },
+            'did:lcore:weather-station-oakland-2': {
+                'address': '0x1BA06167E9e1A3FdE3d5004c15a750cdAd7cF17F',
+                'private_key': '0x9b1f0bcb8f413051818593399ec70c03e55c5aad44eadd4fa1f34d9028d6e3e4',
+                'wallet_id': 'wallet_008'
+            }
+        }
+        
+        logger.info(f"Using {len(demo_wallets)} hardcoded demo wallet mappings")
+        return demo_wallets
     
     def get_wallet_for_device(self, device_id: str) -> Optional[Dict[str, str]]:
         """Get wallet info for a device ID"""
