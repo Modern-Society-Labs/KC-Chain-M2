@@ -5,7 +5,6 @@ import {
   Smartphone, 
   HelpCircle,
   Shield,
-  BarChart3,
   ExternalLink,
   Github,
   Mail,

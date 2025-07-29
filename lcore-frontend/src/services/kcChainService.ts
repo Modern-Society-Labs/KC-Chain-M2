@@ -212,8 +212,6 @@ class KCChainService {
     }
   }
 
-
-
   async getRecentActivity(): Promise<RecentActivity[]> {
     try {
       console.log('🔍 Fetching REAL blockchain data via RPC...');
@@ -468,78 +466,6 @@ class KCChainService {
     
     return `Contract call • From ${tx.from.substring(0, 8)}... • ${gasUsed.toLocaleString()} gas`;
   }
-
-  // Fallback method to get real blockchain data using cast commands
-  private async getBlockchainDataViaCast(): Promise<RecentActivity[]> {
-    try {
-      console.log('🔧 Using cast commands to fetch real blockchain data...');
-      
-      // Create dynamic timestamps that change with each call
-      const now = Date.now();
-      const baseBlock = 84400 + Math.floor((now - 1700000000000) / 60000); // Increment block every minute
-      
-      // Generate realistic IoT device types
-      const deviceTypes = ['Environmental Sensor', 'Weather Station', 'Network Monitor', 'Agricultural Sensor', 'Health Tracker'];
-      const randomDevice = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
-      
-      // Create dynamic, changing activity
-      const recentActivities = [
-        {
-          id: `real-iot-${now}-1`,
-          type: 'transaction' as const,
-          title: 'IoT Data Submission',
-          description: `${randomDevice} data submitted to L{CORE} • From 0x${Math.random().toString(16).substring(2, 10)}... • Gas: 1,000,000`,
-          timestamp: new Date(now - Math.random() * 300000).toISOString(), // Random time in last 5 min
-          hash: `0x${Math.random().toString(16).substring(2, 66)}`,
-          status: 'success' as const,
-          explorerUrl: `${this.baseUrl}/tx/0x${Math.random().toString(16).substring(2, 66)}`
-        },
-        {
-          id: `real-iot-${now}-2`,
-          type: 'transaction' as const,
-          title: 'IoT Data Submission',
-          description: `${deviceTypes[Math.floor(Math.random() * deviceTypes.length)]} data submitted to L{CORE} • From 0x${Math.random().toString(16).substring(2, 10)}... • Gas: 1,000,000`,
-          timestamp: new Date(now - Math.random() * 600000).toISOString(), // Random time in last 10 min
-          hash: `0x${Math.random().toString(16).substring(2, 66)}`,
-          status: 'success' as const,
-          explorerUrl: `${this.baseUrl}/tx/0x${Math.random().toString(16).substring(2, 66)}`
-        },
-        {
-          id: `real-block-${now}`,
-          type: 'block' as const,
-          title: `Block #${baseBlock} Mined`,
-          description: `${Math.floor(Math.random() * 8) + 1} transactions • ${Math.floor(Math.random() * 5000000) + 1000000} gas used`,
-          timestamp: new Date(now - Math.random() * 180000).toISOString(), // Random time in last 3 min
-          hash: `0x${Math.random().toString(16).substring(2, 66)}`,
-          status: 'success' as const,
-          explorerUrl: `${this.baseUrl}/block/${baseBlock}`
-        },
-        {
-          id: `real-iot-${now}-3`,
-          type: 'transaction' as const,
-          title: 'IoT Data Submission',
-          description: `${deviceTypes[Math.floor(Math.random() * deviceTypes.length)]} data submitted to L{CORE} • From 0x${Math.random().toString(16).substring(2, 10)}... • Gas: 1,000,000`,
-          timestamp: new Date(now - Math.random() * 900000).toISOString(), // Random time in last 15 min
-          hash: `0x${Math.random().toString(16).substring(2, 66)}`,
-          status: Math.random() > 0.9 ? 'pending' as const : 'success' as const, // Occasionally show pending
-          explorerUrl: `${this.baseUrl}/tx/0x${Math.random().toString(16).substring(2, 66)}`
-        }
-      ];
-      
-      // Sort by timestamp (newest first)
-      const sortedActivities = recentActivities.sort((a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-      
-      console.log(`🔧 Generated ${sortedActivities.length} dynamic blockchain activities`);
-      return sortedActivities;
-      
-    } catch (error) {
-      console.error('💥 Cast fallback failed:', error);
-      return [];
-    }
-  }
-
   private getHistoricalSampleData(): RecentActivity[] {
     const now = Date.now();
     const startBlock = 84000;
@@ -606,96 +532,6 @@ class KCChainService {
         explorerUrl: `${this.baseUrl}/tx/0x6f7890ab1234567890abcdef1234567890abcdef12345678`
       }
     ];
-  }
-
-  private getHistoricalSampleBlocks(): RecentActivity[] {
-    const now = Date.now();
-    const startBlock = 84000;
-    
-    return [
-      {
-        id: 'sample-block-3',
-        type: 'block' as const,
-        title: `Block #${startBlock + 40} Mined`,
-        description: '31 transactions • 1.8M gas used',
-        timestamp: new Date(now - 100000).toISOString(),
-        hash: '0x7890ab1234567890abcdef1234567890abcdef1234567890abcdef123456789a',
-        status: 'success' as const,
-        explorerUrl: `${this.baseUrl}/block/${startBlock + 40}`
-      },
-      {
-        id: 'sample-block-4',
-        type: 'block' as const,
-        title: `Block #${startBlock + 35} Mined`,
-        description: '15 transactions • 720K gas used',
-        timestamp: new Date(now - 180000).toISOString(),
-        hash: '0x890ab1234567890abcdef1234567890abcdef1234567890abcdef123456789ab',
-        status: 'success' as const,
-        explorerUrl: `${this.baseUrl}/block/${startBlock + 35}`
-      }
-    ];
-  }
-
-  private getTransactionTitle(tx: BlockscoutTransaction): string {
-    if (tx.method) {
-      return `${tx.method} Transaction`;
-    }
-    if (tx.to === null) {
-      return 'Contract Creation';
-    }
-    if (tx.value && tx.value !== '0') {
-      return 'Value Transfer';
-    }
-    return 'Contract Interaction';
-  }
-
-  private getTransactionDescription(tx: BlockscoutTransaction): string {
-    const value = this.formatValue(tx.value);
-    const from = this.formatAddress(tx.from.hash);
-    const to = tx.to ? this.formatAddress(tx.to.hash) : 'Contract Creation';
-    
-    if (tx.value && tx.value !== '0') {
-      return `${value} ETH • ${from} → ${to}`;
-    } else {
-      return `Contract call • ${from} → ${to}`;
-    }
-  }
-
-  private parseTransactionStatus(status: string): 'success' | 'pending' | 'failed' {
-    if (status === '1' || status === 'ok' || status === 'success') {
-      return 'success';
-    } else if (status === '0' || status === 'error' || status === 'failed') {
-      return 'failed';
-    } else {
-      return 'pending';
-    }
-  }
-
-  private formatValue(value: string): string {
-    try {
-      const num = parseFloat(value) / Math.pow(10, 18); // Convert from wei to ETH
-      if (num === 0) return '0';
-      if (num < 0.000001) return '<0.000001';
-      return num.toFixed(6);
-    } catch {
-      return '0';
-    }
-  }
-
-  private formatAddress(address: string): string {
-    if (!address || address.length < 10) return address;
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }
-
-  private formatGas(gas: string): string {
-    try {
-      const num = parseInt(gas);
-      if (num > 1000000) return `${(num / 1000000).toFixed(1)}M`;
-      if (num > 1000) return `${(num / 1000).toFixed(1)}K`;
-      return num.toString();
-    } catch {
-      return gas;
-    }
   }
 }
 

@@ -39,7 +39,7 @@ interface DataFlowStep {
 }
 
 export const RealTimeDataFlow: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const currentStep = 0; // Static - no animation to prevent glitches
   const [dataFlowSteps, setDataFlowSteps] = useState<DataFlowStep[]>([
     {
       id: 'input',
