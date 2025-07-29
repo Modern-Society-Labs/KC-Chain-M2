@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#3b82f6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <title>L{CORE} - City Chain Dashboard | Locale Network</title>
+    <meta name="description" content="Privacy-preserving IoT data marketplace powered by Cartesi rollups and Locale Network" />
+    
+    <!-- Google Fonts: Inter and IBM Plex Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+      /* Custom CSS variables for runtime theme access */
+      :root {
+        --locale-blue: #3b82f6;
+        --smart-city-teal: #3AB5C4;
+        --cloud-white: #F5F7FA;
+        --urban-grey: #A3A8B2;
+        --accent-lime: #C9FF56;
+        --muted-coral: #E89B89;
+        --warm-amber: #F5B041;
+        --grid-lines: #E0E0E0;
+      }
+      
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background-color: var(--cloud-white);
+        color: var(--urban-grey);
+        margin: 0;
+        padding: 0;
+      }
+      
+      /* Loading spinner styles */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid var(--grid-lines);
+        border-radius: 50%;
+        border-top-color: var(--smart-city-teal);
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading fallback -->
+      <div style="display: flex; align-items: center; justify-content: center; height: 100vh; flex-direction: column; gap: 16px;">
+        <div class="loading-spinner"></div>
+        <p style="color: var(--urban-grey); font-size: 16px;">Loading L{CORE} Dashboard...</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html> 

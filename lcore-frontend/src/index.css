@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Locale Network Design System - Custom Components */
+
+@layer components {
+  /* Button Components */
+  .btn-primary {
+    @apply bg-locale-blue text-white px-6 py-3 rounded-lg font-medium shadow-card transition-all duration-200 hover:bg-locale-blue-dark hover:shadow-card-hover;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-locale-gray-dark border border-locale-gray-light px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:bg-locale-bg hover:border-locale-blue;
+  }
+  
+  .btn-accent {
+    @apply bg-locale-gradient text-white px-6 py-3 rounded-lg font-medium shadow-card transition-all duration-200 hover:shadow-card-hover;
+  }
+  
+  /* Card Components */
+  .locale-card {
+    @apply bg-white rounded-lg shadow-card border border-locale-gray-light/50 p-6 transition-all duration-200 hover:shadow-card-hover;
+  }
+  
+  .iot-device-card {
+    @apply locale-card relative overflow-hidden;
+  }
+  
+  .device-card-active {
+    @apply border-l-4 border-l-device-active shadow-device-active;
+  }
+  
+  .device-card-error {
+    @apply border-l-4 border-l-device-error;
+  }
+  
+  .device-card-offline {
+    @apply border-l-4 border-l-device-offline opacity-75;
+  }
+  
+  /* Privacy Elements */
+  .privacy-indicator {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 bg-locale-blue/10 text-locale-blue rounded-lg text-sm font-medium;
+  }
+  
+  .zk-proof-badge {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 bg-accent-green/10 text-accent-green rounded-lg text-sm font-medium;
+  }
+  
+  /* Community Elements */
+  .community-element {
+    @apply border-l-4 border-accent-purple bg-gradient-to-r from-accent-purple/5 to-transparent pl-4;
+  }
+  
+  .user-contribution {
+    @apply bg-community-gradient text-white rounded-lg p-4 shadow-card;
+  }
+  
+  /* Data Flow Indicators */
+  .live-data-indicator {
+    @apply animate-data-flow;
+  }
+  
+  .data-flow-line {
+    @apply h-1 bg-data-gradient rounded-full animate-pulse;
+  }
+  
+  /* Status Indicators */
+  .status-active {
+    @apply text-device-active;
+  }
+  
+  .status-idle {
+    @apply text-device-idle;
+  }
+  
+  .status-error {
+    @apply text-device-error;
+  }
+  
+  .status-offline {
+    @apply text-device-offline;
+  }
+  
+  /* Navigation */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 text-locale-gray hover:text-locale-blue hover:bg-locale-bg rounded-lg transition-all duration-200 mx-2;
+  }
+  
+  .nav-item-active {
+    @apply text-locale-blue bg-locale-blue/10 border-r-2 border-locale-blue font-medium;
+  }
+  
+  /* Form Elements */
+  .input-field {
+    @apply w-full px-4 py-3 border border-locale-gray-light rounded-lg bg-white text-locale-gray placeholder-locale-gray/60 focus:outline-none focus:ring-2 focus:ring-locale-blue focus:border-transparent;
+  }
+  
+  .select-field {
+    @apply w-full px-4 py-3 border border-locale-gray-light rounded-lg bg-white text-locale-gray focus:outline-none focus:ring-2 focus:ring-locale-blue focus:border-transparent;
+  }
+  
+  /* Chart Container */
+  .chart-container {
+    @apply bg-white rounded-lg p-6 shadow-card;
+  }
+  
+  /* Loading States */
+  .loading-skeleton {
+    @apply bg-locale-gray-light animate-pulse rounded;
+  }
+  
+  /* Typography Utilities */
+  .text-h1 {
+    @apply text-4xl text-locale-gray-dark font-bold leading-tight;
+  }
+  
+  .text-h2 {
+    @apply text-2xl text-locale-gray-dark font-medium leading-snug;
+  }
+  
+  .text-body {
+    @apply text-base text-locale-gray leading-relaxed;
+  }
+  
+  .text-caption {
+    @apply text-xs text-locale-gray font-light leading-normal;
+  }
+  
+  .text-mono {
+    @apply font-mono text-sm text-locale-gray bg-white px-2 py-1 rounded;
+  }
+
+  /* Mobile Specific Components */
+  .mobile-card {
+    @apply locale-card p-4 sm:p-6;
+  }
+  
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+  }
+  
+  .mobile-text-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .mobile-text-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .mobile-p-4 {
+    @apply p-3 sm:p-4 lg:p-6;
+  }
+  
+  .mobile-gap-4 {
+    @apply gap-3 sm:gap-4 lg:gap-6;
+  }
+  
+  /* Touch-friendly buttons */
+  .btn-mobile {
+    @apply min-h-12 px-4 py-3 text-base;
+  }
+  
+  /* Mobile-first responsive text */
+  .responsive-text {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+  
+  .responsive-heading {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+}
+
+/* Custom Animations */
+@layer utilities {
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 5px theme('colors.accent-green');
+    }
+    to {
+      box-shadow: 0 0 20px theme('colors.accent-green'), 0 0 30px theme('colors.accent-green');
+    }
+  }
+  
+  .animate-data-pulse {
+    animation: data-pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes data-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.7;
+      transform: scale(1.05);
+    }
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: theme('colors.locale-bg');
+}
+
+::-webkit-scrollbar-thumb {
+  background: theme('colors.locale-gray');
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: theme('colors.locale-blue');
+}
+
+/* Global Overrides */
+body {
+  @apply bg-locale-bg text-locale-gray font-sans antialiased;
+}
+
+#root {
+  min-height: 100vh;
+} 

@@ -1,0 +1,13 @@
+overwrite: true
+schema: "https://lcore-iot-node-production.up.railway.app/graphql"
+documents: "src/**/*.{ts,tsx}"
+generates:
+  src/generated/graphql.ts:
+    plugins:
+      - "typescript"
+      - "typescript-operations" 
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withRefetchFn: true
+      withSubscriptionHooks: true 
