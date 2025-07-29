@@ -1,6 +1,5 @@
 FROM python:3.11-slim
 
-# Set working directory
 WORKDIR /app
 
 # Install system dependencies quickly
@@ -21,5 +20,5 @@ COPY continuous_simulation_service.py .
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
 
-# Start the application
-CMD ["sh", "-c", "python3 continuous_simulation_service.py --host 0.0.0.0 --port ${PORT:-8080}"] 
+# Start the application with proper port variable handling
+CMD python3 continuous_simulation_service.py --host 0.0.0.0 --port ${PORT:-8080}
