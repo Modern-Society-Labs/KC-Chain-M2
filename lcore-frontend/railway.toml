@@ -1,6 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "lcore-frontend/Dockerfile"
+buildContext = "lcore-frontend"
 
 [deploy]
 healthcheckPath = "/"
