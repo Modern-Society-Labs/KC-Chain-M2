@@ -882,33 +882,17 @@ async def shutdown_event():
 
 if __name__ == "__main__":
     # Run the service
-    import argparse
     import os
     
-    # Get port from environment variable first, then command line args
-    port_from_env = os.environ.get('PORT')
-    if port_from_env:
-        try:
-            port_from_env = int(port_from_env)
-        except ValueError:
-            port_from_env = None
+    # Get configuration from environment variables
+    host = os.environ.get('HOST', '0.0.0.0')
+    port = int(os.environ.get('PORT', '8080'))
     
-    parser = argparse.ArgumentParser(description='L{CORE} Continuous Simulation Service')
-    parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
-    parser.add_argument('--port', type=int, default=port_from_env or 8080, help='Port to bind to')
-    parser.add_argument('--reload', action='store_true', help='Enable auto-reload for development')
-    
-    args = parser.parse_args()
-    
-    # Use environment PORT if available, otherwise use parsed args
-    final_port = port_from_env or args.port
-    
-    logger.info(f"Starting service on {args.host}:{final_port}")
+    logger.info(f"Starting L{{CORE}} simulation service on {host}:{port}")
     
     uvicorn.run(
-        "continuous_simulation_service:app" if args.reload else app,
-        host=args.host,
-        port=final_port,
-        reload=args.reload,
+        app,
+        host=host,
+        port=port,
         log_level="info"
     ) 
