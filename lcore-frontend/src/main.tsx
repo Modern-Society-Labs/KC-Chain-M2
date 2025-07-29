@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './App.tsx'
-import { apolloClient } from './lib/apollo.ts'
+import { apolloClient } from './lib/apollo'
 import './index.css'
 
 // Create React Query client
