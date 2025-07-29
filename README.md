@@ -1,10 +1,52 @@
-# KC-Chain-M2: IoT-L{CORE} Phase 2 Complete
+# KC-Chain-M2: IoT-L{CORE} Phase 2 Complete + Live Demo
 
 **Phase 2 Status**: **MILESTONE ACHIEVED** - All deliverables completed and KPIs exceeded
 
 [![Cartesi Node Status](https://img.shields.io/badge/Cartesi%20Node-Live%20Production-green)](http://45.55.204.196:8000/graphql)
 [![Performance](https://img.shields.io/badge/Performance-10k%2B%20tx%2Fday-blue)](http://45.55.204.196:8000/graphql)
 [![Device SDK](https://img.shields.io/badge/Device%20SDK-v1.0%20Production-green)](https://github.com/Modern-Society-Labs/lcore-device-sdk)
+[![Frontend Demo](https://img.shields.io/badge/Frontend-Live%20Demo-blue)](./lcore-frontend)
+[![Simulation](https://img.shields.io/badge/Simulation-FastAPI%20Service-orange)](./scripts)
+
+## 🎯 Live Demo - Real-Time IoT Dashboard
+
+A **production-ready IoT dashboard** demonstrating the complete L{CORE} ecosystem with real blockchain integration:
+
+- **67 IoT devices** with real wallet addresses making actual blockchain transactions
+- **Live blockchain data** fetched via RPC calls to KC-Chain devnet
+- **Real-time simulation service** making actual InputBox contract calls using Foundry's `cast`
+- **Dynamic device registry** with live status indicators and activity tracking
+- **Beautiful responsive UI** with Locale Network branding and social links
+
+### **🚀 Quick Demo Start**
+
+**Prerequisites**: Node.js 18+, Python 3.8+, Git
+
+```bash
+# Clone and setup
+git clone https://github.com/Modern-Society-Labs/KC-Chain-M2.git
+cd KC-Chain-M2
+
+# Terminal 1: Start IoT Simulation Service
+cd scripts
+pip3 install -r requirements_simulator.txt
+python3 continuous_simulation_service.py --port 8080
+
+# Terminal 2: Start Frontend Dashboard  
+cd lcore-frontend
+npm install
+npm run dev
+
+# Open http://localhost:3000 to see live dashboard
+```
+
+### **📊 Dashboard Features**
+- **Real-Time Components**: Live device metrics, blockchain activity timeline, simulation controls
+- **Device Registry**: 67 devices across 6 categories (Health, Retail, Network, Environmental, Weather, Agricultural)
+- **Blockchain Integration**: Live RPC calls, transaction tracking, wallet links to block explorer
+- **Privacy Features**: Device identity protection, encrypted data simulation, blockchain transparency
+
+---
 
 ## Phase 2 Milestone Completion Summary
 
@@ -172,6 +214,14 @@ L{CORE} PRODUCTION PERFORMANCE METRICS
 | **InputBox** | [`0x1B7e742164acB4C2Ea673639f7547793f250c4fD`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x1B7e742164acB4C2Ea673639f7547793f250c4fD) | Cartesi data input gateway | N/A | Operational |
 | **Authority** | [`0x602eD0C91a0a0Ff795532E1B3641009Ea395C086`](https://explorer-1205614515668104.devnet.alchemy.com/address/0x602eD0C91a0a0Ff795532E1B3641009Ea395C086) | Fraud-proof validation | N/A | Operational |
 
+### **Demo Integration Contracts**
+
+| Contract | Demo Usage | Frontend Integration |
+|----------|------------|---------------------|
+| **InputBox** | IoT simulation service target | Real-time transaction monitoring |
+| **DeviceRegistry** | Device ownership tracking | Wallet-to-device mapping |
+| **Block Explorer** | Transaction verification | Clickable wallet/transaction links |
+
 ### **Contract Features**
 
 #### **DeviceRegistry v8**
@@ -234,6 +284,17 @@ fn encrypt_stage2(data: &[u8], context: &str) -> Vec<u8> {
 | **Retail** | `foot_traffic`, `sales_volume`, `inventory` | Business analytics, optimization | 1,670+ |
 | **Network** | `latency`, `bandwidth`, `signal_strength` | 5G performance, connectivity | 980+ |
 | **Agricultural** | `soil_moisture`, `ph_level`, `nutrients` | Precision farming, crop optimization | 2,340+ |
+
+### **Demo Device Categories**
+
+| Category | Count | Example Devices | Wallet Examples |
+|----------|-------|----------------|-----------------|
+| **Health** | 12 | Fitness trackers, Heart rate monitors | `0xaa558896...`, `0x121d761C...` |
+| **Retail** | 28 | Point-of-sale, Foot traffic counters | `0x15b7BE86...`, `0xcC770969...` |
+| **Network** | 10 | Cell towers, 5G monitors | `0xF80812f7...`, `0x8a6B923F...` |
+| **Environmental** | 10 | Air/water quality sensors | `0x15032Fe2...`, `0xA725ac2f...` |
+| **Weather** | 5 | Weather stations, Climate monitors | `0x1BA06167...`, `0x8aD29b31...` |
+| **Agricultural** | 2 | Soil sensors, Crop monitors | `0x29E1E88f...`, `0x25951719...` |
 
 ### **GraphQL API Endpoints (5 New)**
 
@@ -342,7 +403,197 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## **Future Enhancements (Phase 3)**
+## 🛠️ **Demo Development & Deployment**
+
+### **Frontend Development** (`lcore-frontend/`)
+```bash
+cd lcore-frontend
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Type checking
+npm run type-check
+
+# Linting
+npm run lint
+```
+
+### **Simulation Service** (`scripts/`)
+```bash
+# Start simulation service
+python3 scripts/continuous_simulation_service.py --port 8080
+
+# Health check
+curl http://localhost:8080/health
+
+# Start simulation via API
+curl -X POST http://localhost:8080/simulation/start
+
+# Stop simulation
+curl -X POST http://localhost:8080/simulation/stop
+```
+
+### **Environment Variables**
+
+**Frontend (`lcore-frontend/.env`):**
+```bash
+# Blockchain Configuration
+VITE_RPC_URL=https://rpc.devnet.alchemy.com/7eade438-d743-4dc5-ac64-3480de391200
+VITE_BLOCK_EXPLORER_URL=https://explorer-1205614515668104.devnet.alchemy.com
+VITE_INPUTBOX_ADDRESS=0xC1f612D9ad2270e31BF41fAdBb92f79B63649133
+VITE_DAPP_ADDRESS=0xB7B462b81A10A24e1976C9029Ef8FfBdCFc1a96a
+
+# Simulation Service
+VITE_SIMULATION_API_URL=http://localhost:8080
+
+# UI Configuration
+VITE_POLLING_INTERVAL=30000
+VITE_MAX_ACTIVITIES=20
+VITE_DEV_MODE=true
+VITE_DEBUG=false
+```
+
+**Simulation Service (`scripts/.env`):**
+```bash
+# Blockchain Configuration
+RPC_URL=https://rpc.devnet.alchemy.com/7eade438-d743-4dc5-ac64-3480de391200
+INPUTBOX_ADDRESS=0xC1f612D9ad2270e31BF41fAdBb92f79B63649133
+DAPP_ADDRESS=0xB7B462b81A10A24e1976C9029Ef8FfBdCFc1a96a
+GAS_LIMIT=1000000
+
+# Server Configuration
+HOST=0.0.0.0
+PORT=8080
+
+# Simulation Settings
+DEFAULT_INTERVAL=600
+MAX_INTERVAL=3600
+MIN_INTERVAL=10
+WALLET_MAPPING_FILE=../wallet_device_mapping.csv
+DEBUG=false
+```
+
+## 🚀 **Railway Deployment**
+
+Both the frontend and simulation service are ready for separate Railway deployments with included `railway.toml` configurations.
+
+### **Frontend Deployment**
+```bash
+# Navigate to frontend directory
+cd lcore-frontend
+
+# Set production environment variables in Railway dashboard:
+# VITE_RPC_URL, VITE_BLOCK_EXPLORER_URL, etc.
+
+# Deploy to Railway
+railway login
+railway up
+
+# Railway will automatically:
+# - Install dependencies with npm install
+# - Build with npm run build  
+# - Serve with npm run preview
+```
+
+### **Simulation Service Deployment**
+```bash
+# Build the Docker image
+docker build -f scripts/Dockerfile -t lcore-iot-simulator:latest .
+
+# Run the test suite
+docker run --rm \
+  -v "$(pwd)/test_results:/app/test_results" \
+  -e LCORE_NODE_URL="http://45.55.204.196:8000/graphql" \
+  --name lcore-iot-simulator \
+  lcore-iot-simulator:latest
+```
+
+#### **What the Simulator Tests**
+
+- **Data Transformation Scripts**: Tests all 6 IoT domain transformations
+- **L{CORE} Node Connectivity**: Validates GraphQL API endpoints
+- **Data Integrity**: Checks privacy compliance and data quality
+- **Device Authentication**: Tests W3C DID format compliance
+- **Performance Benchmarks**: Measures query response times
+
+#### **Test Results**
+
+Results are saved to `./test_results/iot_simulator_test_report.json` with detailed metrics on:
+- Transformation script execution times
+- API response times
+- Privacy compliance verification
+- Device authentication status
+
+### **Data Transformation Scripts**
+
+The `/data_transformation/` directory contains 7 Python scripts that process real IoT datasets:
+
+| Script | Purpose | Input Dataset | Output Records |
+|--------|---------|---------------|----------------|
+| `environmental_fusion.py` | Combines air + water quality data | 2 CSV files | 2,000 records |
+| `agriculture_transformation.py` | Generates IoT timestamps for plant data | Agriculture CSV | 30,000 records |
+| `health_privacy_protection.py` | Removes location data from fitness trackers | Health CSV | 1,000 records |
+| `network_performance_parsing.py` | Parses network metrics from strings | 5G QoS CSV | 400 records |
+| `retail_pii_anonymization.py` | Removes customer PII + adds neighborhoods | Sales CSV | 2,823 records |
+| `weather_unit_conversion.py` | Converts Fahrenheit to Celsius | Weather CSV | 8,760 records |
+| `run_all_transformations.py` | **Master script** - runs all transformations | All datasets | 44,983 total |
+
+
+---
+
+```
+cd scripts
+
+# Set production environment variables in Railway dashboard:
+# RPC_URL, INPUTBOX_ADDRESS, DAPP_ADDRESS, etc.
+# Note: Exclude wallet mapping file for security
+
+# Deploy to Railway  
+railway login
+railway up
+
+# Railway will automatically:
+# - Install Python dependencies
+# - Start service on $PORT with health checks
+```
+
+### **Environment Variables for Production**
+- **Frontend**: Update `VITE_SIMULATION_API_URL` to your deployed simulation service URL
+- **Simulation Service**: Update `WALLET_MAPPING_FILE` path or use environment-based wallet configuration
+- **Security**: Never commit actual private keys to the repository
+
+## 🧪 Testing
+
+### **Integration Testing**
+```bash
+# Run full integration test
+npm run test:integration
+
+# Test simulation service
+python3 -m pytest scripts/tests/
+
+# Browser testing
+npm run test:e2e
+```
+
+See **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** for detailed testing instructions.
+
+## Key Technologies
+
+- **React 18** - Frontend framework
+- **TypeScript** - Type safety and developer experience
+- **Tailwind CSS** - Utility-first styling
+- **Vite** - Build tool and development server
+- **FastAPI** - Python backend service
+- **WebSockets** - Real-time communication
+- **Ethers.js** - Blockchain interaction
+- **Foundry Cast** - Transaction execution
+
+---
 
 ### **Planned Improvements**
 
@@ -423,132 +674,15 @@ curl -X POST http://45.55.204.196:8000/graphql \
 
 ---
 
-## **Docker Simulator Test**
-
-### **Running the Simulator in Docker**
-
-The project includes a comprehensive Docker-based test environment that validates all IoT data transformations and L{CORE} node connectivity.
-
-#### **Quick Start**
-
-```bash
-# Clone the repository
-git clone https://github.com/Modern-Society-Labs/KC-Chain-M2.git
-cd KC-Chain-M2
-
-# Run the Docker simulator test suite
-./scripts/run_simulator_docker.sh
-```
-
-#### **Manual Docker Commands**
-
-```bash
-# Build the Docker image
-docker build -f scripts/Dockerfile -t lcore-iot-simulator:latest .
-
-# Run the test suite
-docker run --rm \
-  -v "$(pwd)/test_results:/app/test_results" \
-  -e LCORE_NODE_URL="http://45.55.204.196:8000/graphql" \
-  --name lcore-iot-simulator \
-  lcore-iot-simulator:latest
-```
-
-#### **What the Simulator Tests**
-
-- **Data Transformation Scripts**: Tests all 6 IoT domain transformations
-- **L{CORE} Node Connectivity**: Validates GraphQL API endpoints
-- **Data Integrity**: Checks privacy compliance and data quality
-- **Device Authentication**: Tests W3C DID format compliance
-- **Performance Benchmarks**: Measures query response times
-
-#### **Test Results**
-
-Results are saved to `./test_results/iot_simulator_test_report.json` with detailed metrics on:
-- Transformation script execution times
-- API response times
-- Privacy compliance verification
-- Device authentication status
-
-### **Data Transformation Scripts**
-
-The `/data_transformation/` directory contains 7 Python scripts that process real IoT datasets:
-
-| Script | Purpose | Input Dataset | Output Records |
-|--------|---------|---------------|----------------|
-| `environmental_fusion.py` | Combines air + water quality data | 2 CSV files | 2,000 records |
-| `agriculture_transformation.py` | Generates IoT timestamps for plant data | Agriculture CSV | 30,000 records |
-| `health_privacy_protection.py` | Removes location data from fitness trackers | Health CSV | 1,000 records |
-| `network_performance_parsing.py` | Parses network metrics from strings | 5G QoS CSV | 400 records |
-| `retail_pii_anonymization.py` | Removes customer PII + adds neighborhoods | Sales CSV | 2,823 records |
-| `weather_unit_conversion.py` | Converts Fahrenheit to Celsius | Weather CSV | 8,760 records |
-| `run_all_transformations.py` | **Master script** - runs all transformations | All datasets | 44,983 total |
-
-#### **Running Transformations Locally**
-
-```bash
-# Run all transformations
-cd data_transformation
-python3 run_all_transformations.py
-
-# Or run individual transformations
-python3 environmental_fusion.py
-python3 agriculture_transformation.py
-# ... etc
-```
-
-### **Connecting to L{CORE} Node**
-
-The system connects to a live L{CORE} node running on Digital Ocean:
-
-- **GraphQL Endpoint**: http://45.55.204.196:8000/graphql
-- **Health Check**: http://45.55.204.196:8000/health
-- **Interactive Playground**: http://45.55.204.196:8000/graphql (browser)
-
-#### **Example GraphQL Queries**
-
-```graphql
-# Get sensor readings
-query {
-  sensorReadings(limit: 10) {
-    deviceId
-    timestamp
-    sensorData
-    dataQuality
-  }
-}
-
-# List available devices
-query {
-  availableDevices {
-    deviceId
-    deviceType
-    dataPoints
-  }
-}
-
-# Get sensor type statistics
-query {
-  sensorTypeStats {
-    sensorType
-    deviceCount
-    totalReadings
-  }
-}
-```
-
-## **Documentation & Resources**
-
 ### **Repository Links**
 - **Device SDK**: https://github.com/Modern-Society-Labs/lcore-device-sdk
 - **Platform Contracts**: https://github.com/Modern-Society-Labs/lcore-platform  
 - **Architecture Documentation**: [Memory Bank Files](./memory-bank/)
 
-### **Technical Specifications**
-- **Cartesi Machine**: RISC-V with 2GB memory allocation
-- **Database**: SQLite with WAL mode and 64MB cache
-- **Encryption**: Pure-Rust implementation (no OpenSSL dependencies)
-- **Network**: KC-Chain (Arbitrum Orbit) with Stylus gas optimization
+- **Website**: [locale.cash](https://locale.cash)
+- **X/Twitter**: [@localenet](https://x.com/localenet)
+- **GitHub**: [Modern Society Labs](https://github.com/modern-society-labs)
+- **Email**: hello@modernsociety.xyz
 
 ## **L{CORE} Ecosystem Repositories**
 
@@ -560,7 +694,7 @@ query {
 | **Shared Libraries** | Common utilities and data structures | Production | [GitHub](https://github.com/Modern-Society-Labs/lcore-shared) |
 | **KC-Chain-M2** | IoT data transformation demo (this repo) | Production | [GitHub](https://github.com/Modern-Society-Labs/KC-Chain-M2) |
 
-### **Additional Resources**
+---
 
 - **IoT Data Transformation Details**: [L{CORE} Shared Repository](https://github.com/Modern-Society-Labs/lcore-shared)
 - **Blockchain Explorer**: [KC-Chain Explorer](https://explorer-1205614515668104.devnet.alchemy.com/)

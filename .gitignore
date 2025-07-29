@@ -49,12 +49,41 @@ memory-bank/
 # Archive directory (local files only)
 archive/
 
-# Integration plan (local documentation only)
-source_data/IoT_DATASET_INTEGRATION_PLAN.md
+# Wallet device mappings (sensitive data)
+wallet_device_mapping.csv
+wallet_device_mapping_summary.csv
 
-# Large traffic datasets (>2GB, exceed GitHub limits)
-source_data/Traffic and Weather Datasets/Traffic Datasets/traffic_speed_PeMSD4.csv
-source_data/Traffic and Weather Datasets/Traffic Datasets/traffic_speed_PeMSD7.csv
+# All markdown files except README and TESTING_GUIDE
+*.md
+!README.md
+!TESTING_GUIDE.md
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Allow example environment files
+!**/.env.example
+
+# Demo scripts and development files
+demo_lcore_continuous_simulation.sh
+PROTOTYPE_SUMMARY.md
+L{CORE}_FRONTEND_DEVELOPMENT_PLAN.md
+
+# Logo files (will be in frontend/public)
+Locale*.png
 
 # Source datasets (available via Kaggle links in README)
 source_data/
+cleansed_data/
+
+# Frontend dependencies and build artifacts
+lcore-frontend/node_modules/
+lcore-frontend/dist/
+lcore-frontend/.env
+lcore-frontend/.env.local
+
+# Scripts logs and temporary files
+scripts/*.log
+scripts/test_results/

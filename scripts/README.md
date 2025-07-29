@@ -1,86 +1,307 @@
-# Wallet-Device Mapping Generator
+# L{CORE} Scripts & Simulation Tools
 
-## Overview
-This script creates 100 Ethereum wallets and associates them with the **actual 67 device IDs** from your transformed IoT datasets, optimizing for maximum wallet participation while maintaining realistic ownership patterns.
+This directory contains scripts and tools for the L{CORE} IoT system, including data transformation utilities and the continuous simulation service.
 
-## Device Distribution Summary
-- **Total Devices**: 67 across 6 categories
-- **Agricultural**: 3 devices (farm plots)
-- **Environmental**: 10 devices (5 air + 5 water sensors)
-- **Health**: 10 devices (fitness trackers)
-- **Network**: 9 devices (cell towers)
-- **Retail**: 30 devices (city chain stores)
-- **Weather**: 5 devices (Oakland weather stations)
+## 🚀 **NEW: Continuous Simulation Service**
 
-## Wallet Distribution Strategy
-- **45 wallets** with 1 device each (45 devices)
-- **8 wallets** with 2 devices each (16 devices)
-- **2 wallets** with 3 devices each (6 devices)
-- **45 wallets** remain empty (for future expansion)
-- **Total**: 67 devices across 55 wallets
+A real-time IoT device simulation service that provides continuous data generation with live dashboard integration.
 
-## Setup & Installation
+### **Features**
 
-1. **Install dependencies:**
-   ```bash
-   pip install -r requirements_wallet_mapping.txt
-   ```
+✅ **Continuous Operation**: Runs indefinitely until stopped  
+✅ **Real-time Control**: Start/stop from frontend dashboard  
+✅ **Configurable Interval**: Adjust submission frequency live  
+✅ **Resume Functionality**: Maintains state and can resume from where it left off  
+✅ **Live Dashboard Updates**: All components update in real-time  
+✅ **Real L{CORE} Integration**: Uses actual GraphQL endpoint  
+✅ **WebSocket Communication**: Real-time bidirectional communication  
+✅ **Device Management**: Tracks and manages multiple simulated devices  
+✅ **Comprehensive Metrics**: Live statistics and performance monitoring  
 
-2. **Run the script:**
-   ```bash
-   python create_wallet_device_mapping.py
-   ```
+### **Quick Start**
 
-## Output Files
+#### **1. Start the Simulation Service**
 
-### 1. `wallet_device_mapping.csv`
-**Detailed mapping with one row per device:**
-```csv
-wallet_id,wallet_address,private_key,device_id,device_category,devices_owned
-wallet_001,0x1234...,0xabcd...,did:lcore:agri-R1,agricultural,1
-wallet_002,0x5678...,0xefgh...,did:lcore:env-101-air,environmental,2
-wallet_002,0x5678...,0xefgh...,did:lcore:env-101-water,environmental,2
+```bash
+# Easy startup (recommended)
+./scripts/start_simulation_service.sh
+
+# Or manual startup
+python3 scripts/continuous_simulation_service.py
+
+# Development mode with auto-reload
+./scripts/start_simulation_service.sh --reload
+
+# Custom host/port
+./scripts/start_simulation_service.sh --host 0.0.0.0 --port 9000
 ```
 
-### 2. `wallet_device_mapping_summary.csv`
-**One row per wallet with category counts:**
-```csv
-wallet_id,wallet_address,total_devices,agricultural_devices,environmental_devices,health_devices,network_devices,retail_devices,weather_devices,device_list
-wallet_001,0x1234...,1,1,0,0,0,0,0,did:lcore:agri-R1
-wallet_002,0x5678...,2,0,2,0,0,0,0,did:lcore:env-101-air; did:lcore:env-101-water
+#### **2. Start the Frontend Dashboard**
+
+```bash
+cd lcore-frontend
+npm run dev
 ```
 
-## Usage in City Chain IoT System
+#### **3. Control the Simulation**
 
-1. **Import wallet data** into your Cartesi application
-2. **Use wallet addresses** as `owner_address` in device registrations
-3. **Enable paymaster functionality** to cover gas costs
-4. **Simulate device data uploads** using the real device IDs
-5. **Test economic models** with realistic wallet distribution
+- Use the enhanced **Device Simulator** panel in the dashboard
+- Adjust the interval in real-time (0.1 to 300 seconds)
+- Watch live metrics update across all dashboard components
+- Start/stop simulation with resume functionality
 
-## Security Notes
+### **API Endpoints**
 
-⚠️ **IMPORTANT**: This script generates real private keys for testing purposes only:
-- **Never use these wallets on mainnet**
-- **Store private keys securely**
-- **Use only for development/testing**
-- **Generate new wallets for production**
+The simulation service provides a REST API and WebSocket interface:
 
-## Customization
+```bash
+# Health check
+curl http://localhost:8080/health
 
-To modify the distribution strategy, edit the `distribution_plan` in the `distribute_devices_optimally()` method:
+# Start simulation
+curl -X POST http://localhost:8080/simulation/start
 
-```python
-distribution_plan = {
-    1: 45,  # 45 wallets with 1 device each
-    2: 8,   # 8 wallets with 2 devices each  
-    3: 2,   # 2 wallets with 3 devices each
+# Stop simulation  
+curl -X POST http://localhost:8080/simulation/stop
+
+# Update interval
+curl -X PUT http://localhost:8080/simulation/interval \
+  -H "Content-Type: application/json" \
+  -d '{"interval": 3.0}'
+
+# Get status
+curl http://localhost:8080/simulation/status
+
+# Get active devices
+curl http://localhost:8080/simulation/devices
+
+# WebSocket for real-time updates
+ws://localhost:8080/ws
+```
+
+### **Frontend Integration**
+
+The continuous simulation service integrates with the following dashboard components:
+
+#### **Enhanced Components**
+
+1. **Device Simulator Panel**
+   - Real-time start/stop control
+   - Live interval adjustment
+   - Device status monitoring
+   - Submission statistics
+
+2. **Live Community Metrics**
+   - Active device count
+   - Data points per hour
+   - Privacy compliance score
+   - Community earnings estimate
+
+3. **Real-Time Data Flow**
+   - Live processing visualization
+   - Automatic GraphQL polling
+   - Device submission tracking
+
+4. **Recent Activity Feed**
+   - Live device submissions
+   - Real-time processing updates
+
+#### **WebSocket Integration**
+
+The frontend automatically connects to the simulation service via WebSocket for real-time updates:
+
+```typescript
+// Example usage in React components
+import { useSimulationService } from '../hooks/useSimulationService';
+
+const MyComponent = () => {
+  const { 
+    status,           // Simulation status
+    devices,          // Active devices
+    connected,        // WebSocket connection status
+    startSimulation,  // Start function
+    stopSimulation,   // Stop function
+    updateInterval    // Update interval function
+  } = useSimulationService();
+
+  // Component automatically updates when simulation state changes
+};
+```
+
+### **Data Sources**
+
+The simulation service uses real transformed IoT datasets:
+
+| Domain | Dataset | Records | Source |
+|--------|---------|---------|--------|
+| **Environmental** | `environmental_sensors_combined.csv` | 2,000 | Air + Water quality fusion |
+| **Agricultural** | `agricultural_sensors_transformed.csv` | 30,000 | Plant research → IoT time-series |
+| **Health** | `health_sensors_privacy_protected.csv` | 1,000 | Privacy-protected fitness data |
+| **Network** | `network_sensors_parsed.csv` | 400 | 5G performance metrics |
+| **Retail** | `retail_sensors_anonymized.csv` | 2,823 | PII-anonymized sales data |
+| **Weather** | `weather_sensors_converted.csv` | 8,760 | Temperature unit conversion |
+
+**Total**: 44,983 real IoT sensor readings
+
+### **Privacy Protection**
+
+All simulated data maintains privacy protection:
+
+- ✅ **0% PII Retention**: No personal information exposed
+- ✅ **Location Anonymization**: Geographic data abstracted
+- ✅ **W3C DID Compliance**: Standardized device identity
+- ✅ **Encryption Ready**: All data prepared for dual encryption
+- ✅ **Community Safe**: Aggregated metrics without individual exposure
+
+### **Performance Metrics**
+
+The simulation service provides comprehensive performance monitoring:
+
+```json
+{
+  "devices_active": 20,
+  "total_submissions": 1247,
+  "successful_submissions": 1245,
+  "failed_submissions": 2,
+  "uptime_seconds": 3600,
+  "privacy_validations": 1245,
+  "data_points_processed": 1245
 }
 ```
 
-## Next Steps
+### **Development Mode**
 
-1. Review the generated CSV files
-2. Import wallet data into your Cartesi IoT system  
-3. Configure paymaster to cover transaction costs
-4. Begin IoT data simulation with realistic ownership patterns 
+For development and testing:
+
+```bash
+# Start with auto-reload
+./scripts/start_simulation_service.sh --reload
+
+# The service will automatically restart when code changes
+# WebSocket connections will be maintained across restarts
+```
+
+### **Troubleshooting**
+
+#### **Common Issues**
+
+1. **Port already in use**
+   ```bash
+   # Use a different port
+   ./scripts/start_simulation_service.sh --port 9000
+   ```
+
+2. **WebSocket connection failed**
+   - Check if the simulation service is running
+   - Verify the port matches in the frontend configuration
+   - Check browser console for connection errors
+
+3. **No datasets found**
+   - The service will use synthetic data as fallback
+   - Run the data transformation scripts to generate real datasets
+   - Check the `cleansed_data/` directory
+
+4. **Frontend not updating**
+   - Verify WebSocket connection in browser dev tools
+   - Check that the simulation service is actually running
+   - Restart both services if needed
+
+#### **Logs & Debugging**
+
+The simulation service provides detailed logging:
+
+```
+[12:34:56.789] INFO: L{CORE} Continuous Simulator initialized
+[12:34:56.791] INFO: Loading transformed IoT datasets...
+[12:34:56.920] INFO: Loaded environmental: 2000 records
+[12:34:56.955] INFO: Loaded weather: 8760 records
+[12:34:57.001] INFO: Total records available: 44983
+[12:34:57.002] INFO: L{CORE} Continuous Simulation Service starting up...
+[12:34:57.010] INFO: Starting service on localhost:8080
+```
+
+---
+
+## **Existing Scripts**
+
+### **Data Transformation Scripts**
+
+Located in `/data_transformation/` directory:
+
+- `environmental_fusion.py` - Combines air + water quality data
+- `agriculture_transformation.py` - Converts static research data to IoT time-series
+- `health_privacy_protection.py` - Removes location data from fitness trackers
+- `network_performance_parsing.py` - Parses network metrics from strings
+- `retail_pii_anonymization.py` - Removes customer PII + adds KC neighborhoods
+- `weather_unit_conversion.py` - Converts Fahrenheit to Celsius
+- `run_all_transformations.py` - Master script to run all transformations
+
+### **Docker Testing**
+
+- `docker_simulator_test.py` - Docker-based testing environment
+- `Dockerfile` - Docker image for testing
+- `run_simulator_docker.sh` - Docker test execution script
+
+### **Utility Scripts**
+
+- `create_wallet_device_mapping.py` - Device-to-wallet mapping utilities
+
+### **Requirements**
+
+- `requirements_simulator.txt` - Python dependencies for simulation service
+- `requirements_wallet_mapping.txt` - Dependencies for wallet mapping utilities
+
+---
+
+## **Getting Started**
+
+### **Prerequisites**
+
+- Python 3.8+
+- Node.js 18+ (for frontend)
+- All dependencies from requirements files
+
+### **Full System Setup**
+
+1. **Install Python dependencies**
+   ```bash
+   pip3 install -r scripts/requirements_simulator.txt
+   ```
+
+2. **Start the simulation service**
+   ```bash
+   ./scripts/start_simulation_service.sh
+   ```
+
+3. **In another terminal, start the frontend**
+   ```bash
+   cd lcore-frontend
+   npm install
+   npm run dev
+   ```
+
+4. **Open the dashboard**
+   - Visit http://localhost:3000
+   - Navigate to the Device Simulator panel
+   - Click "Start Simulation" to begin continuous operation
+
+### **Expected Workflow**
+
+1. **Dashboard loads** → WebSocket connects to simulation service
+2. **Click "Start Simulation"** → Service begins generating device data
+3. **Adjust interval** → Real-time configuration updates
+4. **Monitor metrics** → Live updates across all dashboard components
+5. **View device activity** → Individual device submission tracking
+6. **Stop/resume** → Full state management and resume capability
+
+### **Integration with L{CORE} Infrastructure**
+
+The simulation service integrates with the complete L{CORE} system:
+
+- **GraphQL API**: https://lcore-iot-node-production.up.railway.app/graphql
+- **Cartesi Processing**: Simulated fraud-proof data processing
+- **Smart Contracts**: InputBox and DeviceRegistry on KC-Chain
+- **Privacy Protection**: Dual encryption and DID compliance
+- **Community Access**: Privacy-preserving data sharing
+
+This provides a complete end-to-end demonstration of the L{CORE} IoT data pipeline from device simulation through community data access. 

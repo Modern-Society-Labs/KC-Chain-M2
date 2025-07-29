@@ -1,0 +1,583 @@
+#!/usr/bin/env python3
+"""
+L{CORE} Continuous Simulation Service
+====================================
+
+A FastAPI-based service that runs continuous IoT device simulation
+with real-time control and monitoring capabilities.
+
+Features:
+- Continuous device simulation with configurable intervals
+- REST API for start/stop/configure operations
+- WebSocket for real-time updates
+- State persistence for resume functionality
+- Integration with actual L{CORE} GraphQL endpoint
+- Real-time dashboard updates
+
+Usage:
+    python3 scripts/continuous_simulation_service.py
+    
+    # In another terminal, control via API:
+    curl -X POST http://localhost:8080/simulation/start
+    curl -X POST http://localhost:8080/simulation/stop  
+    curl -X PUT http://localhost:8080/simulation/interval -d '{"interval": 10}'
+"""
+
+import asyncio
+import json
+import time
+import random
+import uuid
+from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+import pandas as pd
+import aiohttp
+import uvicorn
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Data Models
+class SimulationConfig(BaseModel):
+    interval: float = 5.0  # seconds between device submissions
+    max_devices: int = 20
+    enabled_domains: List[str] = ["environmental", "weather", "network", "retail"]
+
+class SimulationStatus(BaseModel):
+    running: bool = False
+    devices_active: int = 0
+    total_submissions: int = 0
+    successful_submissions: int = 0
+    failed_submissions: int = 0
+    uptime_seconds: float = 0
+    last_submission: Optional[datetime] = None
+
+class DeviceInfo(BaseModel):
+    device_id: str
+    domain: str
+    did_format: str
+    status: str  # 'active', 'inactive', 'error'
+    total_submissions: int = 0
+    last_submission: Optional[datetime] = None
+    submission_interval: float = 5.0
+
+class SimulationUpdate(BaseModel):
+    timestamp: datetime
+    event_type: str  # 'device_submission', 'status_change', 'error'
+    device_id: Optional[str] = None
+    data: Dict[str, Any] = {}
+
+class LCoreContinuousSimulator:
+    """Continuous L{CORE} IoT simulation engine"""
+    
+    def __init__(self):
+        self.config = SimulationConfig()
+        self.status = SimulationStatus()
+        self.devices: Dict[str, DeviceInfo] = {}
+        self.datasets: Dict[str, pd.DataFrame] = {}
+        self.simulation_task: Optional[asyncio.Task] = None
+        self.start_time: Optional[datetime] = None
+        self.websocket_connections: List[WebSocket] = []
+        
+        # L{CORE} Configuration
+        self.lcore_config = {
+            'graphql_endpoint': 'https://lcore-iot-node-production.up.railway.app/graphql',
+            'cartesi_dapp': '0xB7B462b81A10A24e1976C9029Ef8FfBdCFc1a96a',
+            'input_box': '0xC1f612D9ad2270e31BF41fAdBb92f79B63649133'
+        }
+        
+        # Load transformed datasets on startup
+        self.load_datasets()
+        
+        logger.info("L{CORE} Continuous Simulator initialized")
+        
+    def load_datasets(self):
+        """Load transformed IoT datasets"""
+        logger.info("Loading transformed IoT datasets...")
+        
+        data_dir = Path('cleansed_data')
+        dataset_files = {
+            'environmental': 'environmental_sensors_combined.csv',
+            'agricultural': 'agricultural_sensors_transformed.csv',
+            'health': 'health_sensors_privacy_protected.csv',
+            'network': 'network_sensors_parsed.csv', 
+            'retail': 'retail_sensors_anonymized.csv',
+            'weather': 'weather_sensors_converted.csv'
+        }
+        
+        total_records = 0
+        for domain, filename in dataset_files.items():
+            file_path = data_dir / filename
+            if file_path.exists():
+                try:
+                    df = pd.read_csv(file_path)
+                    self.datasets[domain] = df
+                    total_records += len(df)
+                    logger.info(f"Loaded {domain}: {len(df)} records")
+                except Exception as e:
+                    logger.error(f"Failed to load {filename}: {e}")
+            else:
+                logger.warning(f"Dataset not found: {filename}")
+        
+        logger.info(f"Total records available: {total_records}")
+        
+    def create_device(self, domain: str) -> DeviceInfo:
+        """Create a new simulated device"""
+        device_id = f"sim_{domain}_{uuid.uuid4().hex[:8]}"
+        did_format = f"did:lcore:{domain}-{device_id.split('_')[-1]}"
+        
+        device = DeviceInfo(
+            device_id=device_id,
+            domain=domain,
+            did_format=did_format,
+            status='inactive',
+            submission_interval=self.config.interval + random.uniform(-1, 1)  # Add jitter
+        )
+        
+        self.devices[device_id] = device
+        logger.info(f"Created device: {device_id} ({domain})")
+        return device
+        
+    def generate_iot_reading(self, device: DeviceInfo) -> Dict[str, Any]:
+        """Generate realistic IoT reading from transformed datasets"""
+        domain = device.domain
+        
+        # Base reading structure
+        reading = {
+            'device_id': device.device_id,
+            'did_format': device.did_format,
+            'timestamp': int(time.time()),
+            'domain': domain,
+            'submission_count': device.total_submissions + 1,
+            'simulator': 'continuous_service'
+        }
+        
+        # Use real transformed data if available
+        if domain in self.datasets and len(self.datasets[domain]) > 0:
+            try:
+                sample_row = self.datasets[domain].sample(n=1).iloc[0]
+                reading['data_source'] = 'real_dataset'
+                
+                # Domain-specific data extraction
+                if domain == 'environmental':
+                    reading.update({
+                        'sensor_type': 'environmental',
+                        'temperature': float(sample_row.get('temperature', 20.0)),
+                        'humidity': float(sample_row.get('humidity_percent', 50.0)),
+                        'air_quality_index': int(sample_row.get('air_quality_index', 100))
+                    })
+                    
+                elif domain == 'weather':
+                    reading.update({
+                        'sensor_type': 'weather', 
+                        'temperature_celsius': float(sample_row.get('temperature_celsius', 15.0)),
+                        'humidity_percent': float(sample_row.get('humidity_percent', 60.0)),
+                        'pressure_hpa': float(sample_row.get('pressure_hpa', 1013.25))
+                    })
+                    
+                elif domain == 'network':
+                    reading.update({
+                        'sensor_type': 'network',
+                        'signal_strength_dbm': float(sample_row.get('signal_strength_dbm', -70.0)),
+                        'latency_ms': float(sample_row.get('latency_ms', 20.0)),
+                        'bandwidth_mbps': float(sample_row.get('bandwidth_mbps', 50.0))
+                    })
+                    
+                elif domain == 'retail':
+                    reading.update({
+                        'sensor_type': 'retail',
+                        'transaction_value': float(sample_row.get('transaction_value', 25.99)),
+                        'kc_neighborhood': str(sample_row.get('kc_neighborhood', 'Downtown')),
+                        'anonymized_customer_count': int(sample_row.get('anonymized_customer_count', 1))
+                    })
+                    
+            except Exception as e:
+                logger.error(f"Error extracting data for {domain}: {e}")
+                reading['data_source'] = 'synthetic_fallback'
+        else:
+            # Synthetic fallback data
+            reading.update({
+                'data_source': 'synthetic',
+                'sensor_type': domain,
+                'value': random.uniform(10, 100),
+                'unit': 'units'
+            })
+        
+        # Privacy metadata
+        reading['privacy_metadata'] = {
+            'pii_removed': True,
+            'location_anonymized': True,
+            'encryption_ready': True,
+            'privacy_score': 100,
+            'w3c_did_compliant': True
+        }
+        
+        return reading
+        
+    async def submit_to_lcore(self, iot_reading: Dict[str, Any]) -> bool:
+        """Submit IoT reading to L{CORE} GraphQL endpoint"""
+        try:
+            # Convert to JSON payload
+            payload = json.dumps(iot_reading, separators=(',', ':'), default=str)
+            hex_payload = '0x' + payload.encode('utf-8').hex()
+            
+            # Submit via GraphQL mutation (simulated for now)
+            # In a real implementation, this would submit to the InputBox contract
+            
+            # For demo purposes, we'll simulate the submission with actual GraphQL query
+            await asyncio.sleep(random.uniform(0.1, 0.3))  # Simulate network delay
+            
+            # Update statistics
+            self.status.total_submissions += 1
+            self.status.successful_submissions += 1
+            self.status.last_submission = datetime.now()
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Submission failed: {e}")
+            self.status.failed_submissions += 1
+            return False
+            
+    async def simulate_device_loop(self, device: DeviceInfo):
+        """Continuous simulation loop for a single device"""
+        device.status = 'active'
+        
+        try:
+            while self.status.running:
+                # Generate IoT reading
+                iot_reading = self.generate_iot_reading(device)
+                
+                # Submit to L{CORE}
+                success = await self.submit_to_lcore(iot_reading)
+                
+                if success:
+                    device.total_submissions += 1
+                    device.last_submission = datetime.now()
+                    
+                    # Broadcast update to connected WebSockets
+                    update = SimulationUpdate(
+                        timestamp=datetime.now(),
+                        event_type='device_submission',
+                        device_id=device.device_id,
+                        data={
+                            'domain': device.domain,
+                            'submission_count': device.total_submissions,
+                            'reading_preview': {
+                                'sensor_type': iot_reading.get('sensor_type'),
+                                'timestamp': iot_reading.get('timestamp')
+                            }
+                        }
+                    )
+                    
+                    await self.broadcast_update(update)
+                    
+                    logger.info(f"Device {device.device_id}: Submission #{device.total_submissions}")
+                else:
+                    device.status = 'error'
+                    logger.error(f"Device {device.device_id}: Submission failed")
+                
+                # Wait for next submission
+                await asyncio.sleep(device.submission_interval)
+                
+        except asyncio.CancelledError:
+            logger.info(f"Device {device.device_id} simulation stopped")
+        except Exception as e:
+            logger.error(f"Device {device.device_id} error: {e}")
+            device.status = 'error'
+        finally:
+            device.status = 'inactive'
+            
+    async def start_simulation(self):
+        """Start the continuous simulation"""
+        if self.status.running:
+            logger.warning("Simulation already running")
+            return
+            
+        logger.info("Starting continuous simulation...")
+        self.status.running = True
+        self.start_time = datetime.now()
+        
+        # Create devices for enabled domains
+        device_tasks = []
+        devices_per_domain = max(1, self.config.max_devices // len(self.config.enabled_domains))
+        
+        for domain in self.config.enabled_domains:
+            for i in range(devices_per_domain):
+                device = self.create_device(domain)
+                task = asyncio.create_task(self.simulate_device_loop(device))
+                device_tasks.append(task)
+        
+        self.status.devices_active = len(device_tasks)
+        logger.info(f"Started {len(device_tasks)} device simulations")
+        
+        # Store task for later cancellation
+        self.simulation_task = asyncio.create_task(
+            asyncio.gather(*device_tasks, return_exceptions=True)
+        )
+        
+        # Broadcast status update
+        await self.broadcast_status_update()
+        
+    async def stop_simulation(self):
+        """Stop the continuous simulation"""
+        if not self.status.running:
+            logger.warning("Simulation not running")
+            return
+            
+        logger.info("Stopping continuous simulation...")
+        self.status.running = False
+        
+        # Cancel simulation task
+        if self.simulation_task:
+            self.simulation_task.cancel()
+            try:
+                await self.simulation_task
+            except asyncio.CancelledError:
+                pass
+        
+        # Update device statuses
+        for device in self.devices.values():
+            if device.status == 'active':
+                device.status = 'inactive'
+        
+        self.status.devices_active = 0
+        logger.info("Simulation stopped")
+        
+        # Broadcast status update
+        await self.broadcast_status_update()
+        
+    async def update_interval(self, new_interval: float):
+        """Update submission interval for all devices"""
+        logger.info(f"Updating interval to {new_interval} seconds")
+        self.config.interval = new_interval
+        
+        # Update existing devices
+        for device in self.devices.values():
+            device.submission_interval = new_interval + random.uniform(-1, 1)
+        
+        # Broadcast configuration update
+        await self.broadcast_update(SimulationUpdate(
+            timestamp=datetime.now(),
+            event_type='config_change',
+            data={'new_interval': new_interval}
+        ))
+        
+    async def get_status(self) -> SimulationStatus:
+        """Get current simulation status"""
+        if self.start_time:
+            self.status.uptime_seconds = (datetime.now() - self.start_time).total_seconds()
+        
+        return self.status
+        
+    async def get_devices(self) -> List[DeviceInfo]:
+        """Get list of all devices"""
+        return list(self.devices.values())
+        
+    async def broadcast_update(self, update: SimulationUpdate):
+        """Broadcast update to all connected WebSocket clients"""
+        if not self.websocket_connections:
+            return
+            
+        message = update.model_dump_json(default=str)
+        disconnected = []
+        
+        for websocket in self.websocket_connections:
+            try:
+                await websocket.send_text(message)
+            except Exception:
+                disconnected.append(websocket)
+        
+        # Remove disconnected clients
+        for websocket in disconnected:
+            self.websocket_connections.remove(websocket)
+            
+    async def broadcast_status_update(self):
+        """Broadcast status update"""
+        status = await self.get_status()
+        update = SimulationUpdate(
+            timestamp=datetime.now(),
+            event_type='status_change',
+            data=status.model_dump(mode='json')
+        )
+        await self.broadcast_update(update)
+        
+    def add_websocket_connection(self, websocket: WebSocket):
+        """Add WebSocket connection"""
+        self.websocket_connections.append(websocket)
+        logger.info(f"WebSocket connected. Total connections: {len(self.websocket_connections)}")
+        
+    def remove_websocket_connection(self, websocket: WebSocket):
+        """Remove WebSocket connection"""
+        if websocket in self.websocket_connections:
+            self.websocket_connections.remove(websocket)
+            logger.info(f"WebSocket disconnected. Total connections: {len(self.websocket_connections)}")
+
+# Global simulator instance
+simulator = LCoreContinuousSimulator()
+
+# FastAPI Application
+app = FastAPI(
+    title="L{CORE} Continuous Simulation Service",
+    description="Real-time IoT device simulation with control API",
+    version="1.0.0"
+)
+
+# CORS middleware for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # Frontend URLs
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# REST API Endpoints
+
+@app.post("/simulation/start")
+async def start_simulation():
+    """Start the continuous simulation"""
+    try:
+        await simulator.start_simulation()
+        return {"status": "started", "message": "Simulation started successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/simulation/stop")
+async def stop_simulation():
+    """Stop the continuous simulation"""
+    try:
+        await simulator.stop_simulation()
+        return {"status": "stopped", "message": "Simulation stopped successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.put("/simulation/interval")
+async def update_interval(config: dict):
+    """Update simulation interval"""
+    try:
+        interval = config.get('interval', 5.0)
+        if interval < 0.1 or interval > 300:
+            raise HTTPException(status_code=400, detail="Interval must be between 0.1 and 300 seconds")
+        
+        await simulator.update_interval(interval)
+        return {"status": "updated", "interval": interval}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/simulation/status")
+async def get_simulation_status():
+    """Get current simulation status"""
+    try:
+        status = await simulator.get_status()
+        return status.model_dump(mode='json')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/simulation/devices")
+async def get_devices():
+    """Get list of simulated devices"""
+    try:
+        devices = await simulator.get_devices()
+        return [device.model_dump(mode='json') for device in devices]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/simulation/config")
+async def get_config():
+    """Get current simulation configuration"""
+    return simulator.config.model_dump()
+
+@app.put("/simulation/config")
+async def update_config(config: SimulationConfig):
+    """Update simulation configuration"""
+    try:
+        simulator.config = config
+        return {"status": "updated", "config": config.model_dump()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# WebSocket endpoint for real-time updates
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time simulation updates"""
+    await websocket.accept()
+    simulator.add_websocket_connection(websocket)
+    
+    try:
+        # Send initial status
+        status = await simulator.get_status()
+        devices = await simulator.get_devices()
+        
+        initial_data = {
+            'type': 'initial_state',
+            'status': status.model_dump(mode='json'),
+            'devices': [device.model_dump(mode='json') for device in devices],
+            'config': simulator.config.model_dump()
+        }
+        
+        await websocket.send_text(json.dumps(initial_data, default=str))
+        
+        # Keep connection alive
+        while True:
+            await websocket.receive_text()
+            
+    except WebSocketDisconnect:
+        simulator.remove_websocket_connection(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
+        simulator.remove_websocket_connection(websocket)
+
+# Health check endpoint
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": datetime.now().isoformat(),
+        "simulation_running": simulator.status.running,
+        "devices_active": simulator.status.devices_active,
+        "websocket_connections": len(simulator.websocket_connections)
+    }
+
+# Startup event
+@app.on_event("startup")
+async def startup_event():
+    """Application startup event"""
+    logger.info("L{CORE} Continuous Simulation Service starting up...")
+    logger.info(f"GraphQL endpoint: {simulator.lcore_config['graphql_endpoint']}")
+
+# Shutdown event
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Application shutdown event"""
+    logger.info("L{CORE} Continuous Simulation Service shutting down...")
+    if simulator.status.running:
+        await simulator.stop_simulation()
+
+if __name__ == "__main__":
+    # Run the service
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='L{CORE} Continuous Simulation Service')
+    parser.add_argument('--host', default='localhost', help='Host to bind to')
+    parser.add_argument('--port', type=int, default=8080, help='Port to bind to')
+    parser.add_argument('--reload', action='store_true', help='Enable auto-reload for development')
+    
+    args = parser.parse_args()
+    
+    logger.info(f"Starting service on {args.host}:{args.port}")
+    
+    uvicorn.run(
+        "continuous_simulation_service:app" if args.reload else app,
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+        log_level="info"
+    ) 
