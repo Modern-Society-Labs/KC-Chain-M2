@@ -8,6 +8,15 @@
 [![Frontend Demo](https://img.shields.io/badge/Frontend-Live%20Demo-blue)](./lcore-frontend)
 [![Simulation](https://img.shields.io/badge/Simulation-FastAPI%20Service-orange)](./scripts)
 
+## 🌐 **[LIVE DEMO - Try Now →](https://lcore-frontend.vercel.app/)**
+
+**Experience the complete L{CORE} ecosystem live in production:**
+- Real-time IoT device simulation with 67+ active devices  
+- Live blockchain integration on KC-Chain devnet
+- Interactive dashboard with device registry and analytics
+
+---
+
 ## 🎯 Live Demo - Real-Time IoT Dashboard
 
 A **production-ready IoT dashboard** demonstrating the complete L{CORE} ecosystem with real blockchain integration:
