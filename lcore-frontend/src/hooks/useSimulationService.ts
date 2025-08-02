@@ -28,7 +28,7 @@ interface SimulationUpdate {
   data: Record<string, any>;
 }
 
-const SIMULATION_API_BASE = 'http://localhost:8080';
+const SIMULATION_API_BASE = import.meta.env.VITE_SIMULATION_API_URL || 'http://localhost:8080';
 
 export const useSimulationService = () => {
   const [status, setStatus] = useState<SimulationStatus>({
@@ -48,7 +48,8 @@ export const useSimulationService = () => {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8080/ws`);
+    const wsUrl = SIMULATION_API_BASE.replace(/^https?:\/\//, 'ws://').replace(/^http:\/\//, 'ws://');
+    const ws = new WebSocket(`${wsUrl}/ws`);
     
     ws.onopen = () => {
       setConnected(true);
