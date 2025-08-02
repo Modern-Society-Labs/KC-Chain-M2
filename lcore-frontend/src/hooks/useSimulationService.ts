@@ -48,7 +48,7 @@ export const useSimulationService = () => {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    const wsUrl = SIMULATION_API_BASE.replace(/^https?:\/\//, 'ws://').replace(/^http:\/\//, 'ws://');
+    const wsUrl = SIMULATION_API_BASE.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://');
     const ws = new WebSocket(`${wsUrl}/ws`);
     
     ws.onopen = () => {
