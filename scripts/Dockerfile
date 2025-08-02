@@ -16,15 +16,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY continuous_simulation_service.py .
 
-# Copy all CSV files
-COPY *.csv ./
-
-# Move sensor data to cleansed_data directory
-RUN mkdir -p cleansed_data && \
-    mv *_sensors_*.csv cleansed_data/ 2>/dev/null || true
+# Copy data folder with all CSV files
+COPY data/ ./data/
 
 # Debug: List copied files
-RUN ls -la . && ls -la cleansed_data/
+RUN ls -la . && ls -la data/
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \

@@ -131,7 +131,7 @@ class LCoreContinuousSimulator:
         """Load transformed IoT datasets"""
         logger.info("Loading transformed IoT datasets...")
         
-        data_dir = Path('cleansed_data')
+        data_dir = Path('data')
         dataset_files = {
             'environmental': 'environmental_sensors_combined.csv',
             'agricultural': 'agricultural_sensors_transformed.csv',
@@ -163,7 +163,7 @@ class LCoreContinuousSimulator:
         import os
         
         # Try to load from CSV first (for local development)
-        wallet_file = "wallet_device_mapping.csv"
+        wallet_file = "data/wallet_device_mapping.csv"
         if os.path.exists(wallet_file):
             device_to_wallet = {}
             try:
