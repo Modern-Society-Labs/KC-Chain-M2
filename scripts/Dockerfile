@@ -16,12 +16,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY continuous_simulation_service.py .
 
-# Copy cleansed data files to cleansed_data directory
-RUN mkdir -p cleansed_data
-COPY *_sensors_*.csv ./cleansed_data/
+# Copy all CSV files
+COPY *.csv ./
 
-# Copy wallet mapping into image
-COPY wallet_device_mapping.csv .
+# Move sensor data to cleansed_data directory
+RUN mkdir -p cleansed_data && \
+    mv *_sensors_*.csv cleansed_data/ 2>/dev/null || true
 
 # Debug: List copied files
 RUN ls -la . && ls -la cleansed_data/
