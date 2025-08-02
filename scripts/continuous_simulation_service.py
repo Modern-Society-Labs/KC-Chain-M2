@@ -31,7 +31,7 @@ import uuid
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Any
-# import pandas as pd  # Not needed for Railway deployment
+import pandas as pd
 import aiohttp
 import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
