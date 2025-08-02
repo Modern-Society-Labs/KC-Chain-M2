@@ -16,6 +16,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY continuous_simulation_service.py .
 
+# Copy cleansed data files to cleansed_data directory
+RUN mkdir -p cleansed_data
+COPY *_sensors_*.csv ./cleansed_data/
+
+# Copy wallet mapping into image
+COPY wallet_device_mapping.csv .
+
+# Debug: List copied files
+RUN ls -la . && ls -la cleansed_data/
+
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
