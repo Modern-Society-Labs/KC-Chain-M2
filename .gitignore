@@ -87,3 +87,10 @@ lcore-frontend/.env.local
 # Scripts logs and temporary files
 scripts/*.log
 scripts/test_results/
+
+# Sensitive data folder (contains private keys)
+SENSITIVE/
+
+# Allow data folder and wallet mapping in data folder
+!scripts/data/
+!scripts/data/wallet_device_mapping.csv
