@@ -38,6 +38,14 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
+import hashlib
+import struct
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.backends import default_backend
+import jwt
+import base64
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +69,102 @@ def safe_float_convert(value, default=0.0):
         return float(value)
     except (ValueError, TypeError):
         return default
+
+
+# L{CORE} Encryption Implementation
+class LCoreEncryption:
+    """L{CORE} dual encryption system implementation"""
+    
+    @staticmethod
+    def derive_aes_key(device_id: str) -> bytes:
+        """Derive AES-256 key from device ID"""
+        return hashlib.sha256(f"{device_id}stage1_key".encode()).digest()
+    
+    @staticmethod
+    def derive_chacha_key(device_id: str) -> bytes:
+        """Derive ChaCha20 key from device ID"""
+        return hashlib.sha256(f"{device_id}stage2_key".encode()).digest()
+    
+    @staticmethod
+    def derive_aes_nonce(device_id: str, counter: int) -> bytes:
+        """Derive AES nonce from device ID and counter"""
+        data = f"{device_id}stage1_nonce{counter}".encode()
+        return hashlib.sha256(data).digest()[:12]
+    
+    @staticmethod
+    def derive_chacha_nonce(device_id: str, counter: int) -> bytes:
+        """Derive ChaCha20 nonce from device ID and counter"""
+        data = f"{device_id}stage2_nonce{counter}".encode()
+        return hashlib.sha256(data).digest()[:12]  # ChaCha20-Poly1305 requires 12 bytes
+    
+    @staticmethod
+    def encrypt_dual(data: str, device_id: str, counter: int) -> str:
+        """Dual encryption: AES-256-GCM then ChaCha20-Poly1305"""
+        try:
+            # Stage 1: AES-256-GCM
+            aes_key = LCoreEncryption.derive_aes_key(device_id)
+            aes_nonce = LCoreEncryption.derive_aes_nonce(device_id, counter)
+            
+            aes_cipher = AESGCM(aes_key)
+            stage1_encrypted = aes_cipher.encrypt(aes_nonce, data.encode(), None)
+            
+            # Stage 2: ChaCha20-Poly1305  
+            chacha_key = LCoreEncryption.derive_chacha_key(device_id)
+            chacha_nonce = LCoreEncryption.derive_chacha_nonce(device_id, counter)
+            
+            chacha_cipher = ChaCha20Poly1305(chacha_key)
+            stage2_encrypted = chacha_cipher.encrypt(chacha_nonce, stage1_encrypted, None)
+            
+            return base64.b64encode(stage2_encrypted).decode()
+            
+        except Exception as e:
+            logger.error(f"Encryption failed for {device_id}: {e}")
+            raise
+
+class JWSTokenCreator:
+    """Create JWS tokens for device authentication"""
+    
+    def __init__(self):
+        # Generate EC private key for each device (in production, this would be stored securely)
+        self.device_keys = {}
+    
+    def get_or_create_device_key(self, device_id: str) -> ec.EllipticCurvePrivateKey:
+        """Get or create EC private key for device"""
+        if device_id not in self.device_keys:
+            # Generate new EC key for this device
+            private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
+            self.device_keys[device_id] = private_key
+        return self.device_keys[device_id]
+    
+    def create_jws_token(self, device_id: str, encrypted_payload: str, counter: int) -> str:
+        """Create JWS token with encrypted payload"""
+        try:
+            # Get device private key
+            private_key = self.get_or_create_device_key(device_id)
+            
+            # Create payload
+            payload = {
+                "device_id": device_id,
+                "encrypted_data": encrypted_payload,
+                "counter": counter,
+                "timestamp": int(time.time()),
+                "iss": device_id,  # issuer
+                "iat": int(time.time()),  # issued at
+            }
+            
+            # Sign with ES256 (ECDSA using P-256 and SHA-256)
+            token = jwt.encode(
+                payload,
+                private_key,
+                algorithm="ES256",
+                headers={"kid": device_id}
+            )
+            
+            return token
+            
+        except Exception as e:
+            logger.error(f"JWS creation failed for {device_id}: {e}")
+            raise
 
 
 # Data Models
@@ -124,6 +228,11 @@ class LCoreContinuousSimulator:
         
         # Load wallet-device mappings
         self.wallet_mappings = self._load_wallet_mappings()
+        
+        # Initialize encryption and JWS components
+        self.encryption = LCoreEncryption()
+        self.jws_creator = JWSTokenCreator()
+        self.device_counters = {}  # Track message counters per device
         
         logger.info("L{CORE} Continuous Simulator initialized")
         
@@ -352,20 +461,42 @@ class LCoreContinuousSimulator:
         return reading
         
     async def submit_to_lcore(self, iot_reading: Dict[str, Any]) -> bool:
-        """Submit IoT reading to REAL InputBox contract using cast"""
+        """Submit encrypted IoT reading to REAL InputBox contract using cast"""
         try:
-            # Convert to JSON payload
-            payload = json.dumps(iot_reading, separators=(',', ':'), default=str)
-            hex_payload = '0x' + payload.encode('utf-8').hex()
+            device_id = iot_reading.get('device_id', 'unknown')
             
             # Get wallet for this device
-            device_id = iot_reading.get('device_id', 'unknown')
             wallet_info = self.get_wallet_for_device(device_id)
-            
             if not wallet_info:
                 logger.error(f"No wallet found for device {device_id}")
                 self.status.failed_submissions += 1
                 return False
+            
+            # Get/increment device counter
+            if device_id not in self.device_counters:
+                self.device_counters[device_id] = 0
+            self.device_counters[device_id] += 1
+            counter = self.device_counters[device_id]
+            
+            # Step 1: Convert IoT reading to JSON
+            iot_json = json.dumps(iot_reading, separators=(',', ':'), default=str)
+            
+            # Step 2: Encrypt using L{CORE} dual encryption
+            encrypted_payload = self.encryption.encrypt_dual(iot_json, device_id, counter)
+            
+            # Step 3: Create JWS token
+            jws_token = self.jws_creator.create_jws_token(device_id, encrypted_payload, counter)
+            
+            # Step 4: Create Cartesi command with proper format
+            cartesi_command = {
+                "type": "submit_sensor_data",
+                "device_id": device_id,
+                "encrypted_payload": jws_token
+            }
+            
+            # Step 5: Convert to hex payload for blockchain
+            command_json = json.dumps(cartesi_command, separators=(',', ':'))
+            hex_payload = '0x' + command_json.encode('utf-8').hex()
             
             # Make REAL cast call to InputBox contract
             input_box_address = "0xC1f612D9ad2270e31BF41fAdBb92f79B63649133"
@@ -376,13 +507,13 @@ class LCoreContinuousSimulator:
                 input_box_address,
                 "addInput(address,bytes)",
                 "0xB7B462b81A10A24e1976C9029Ef8FfBdCFc1a96a",  # Cartesi DApp address
-                hex_payload,             # input data
+                hex_payload,             # encrypted input data
                 "--private-key", wallet_info['private_key'],
                 "--rpc-url", rpc_url,
                 "--gas-limit", "1000000"
             ]
             
-            logger.info(f"🚀 Submitting real transaction for device {device_id} from wallet {wallet_info['address'][:8]}...")
+            logger.info(f"🔐 Submitting encrypted transaction for device {device_id} (counter: {counter}) from wallet {wallet_info['address'][:8]}...")
             
             # Execute cast command
             import subprocess
@@ -396,7 +527,7 @@ class LCoreContinuousSimulator:
             
             if result.returncode == 0:
                 tx_hash = stdout.decode().strip()
-                logger.info(f"✅ Transaction successful! Hash: {tx_hash}")
+                logger.info(f"✅ Encrypted transaction successful! Hash: {tx_hash}")
                 
                 # Update statistics
                 self.status.total_submissions += 1
@@ -410,7 +541,7 @@ class LCoreContinuousSimulator:
                 return False
             
         except Exception as e:
-            logger.error(f"💥 Submission failed: {e}")
+            logger.error(f"💥 Encrypted submission failed: {e}")
             self.status.failed_submissions += 1
             return False
             
