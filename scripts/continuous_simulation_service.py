@@ -61,12 +61,16 @@ def safe_int_convert(value, default=0):
     except (ValueError, TypeError):
         return default
 
-def safe_float_convert(value, default=0.0):
-    """Safely convert value to float, handling NaN"""
+def safe_float_convert(value, default=None):
+    """Safely convert value to float, replace NaN with default/None"""
+    import math
     try:
         if value is None or str(value).strip() == '':
             return default
-        return float(value)
+        val = float(value)
+        if math.isnan(val):
+            return default
+        return val
     except (ValueError, TypeError):
         return default
 
@@ -409,7 +413,7 @@ class LCoreContinuousSimulator:
                     reading.update({
                         'sensor_type': 'environmental',
                         'temperature': safe_float_convert(sample_row.get('temperature'), 20.0),
-                        'humidity': safe_float_convert(sample_row.get('humidity_percent'), 50.0),
+                        'humidity': safe_float_convert(sample_row.get('humidity_percent'), None),
                         'air_quality_index': safe_int_convert(sample_row.get('air_quality_index'), 100)
                     })
                     
@@ -417,7 +421,7 @@ class LCoreContinuousSimulator:
                     reading.update({
                         'sensor_type': 'weather', 
                         'temperature_celsius': safe_float_convert(sample_row.get('temperature_celsius'), 15.0),
-                        'humidity_percent': safe_float_convert(sample_row.get('humidity_percent'), 60.0),
+                        'humidity_percent': safe_float_convert(sample_row.get('humidity_percent'), None),
                         'pressure_hpa': safe_float_convert(sample_row.get('pressure_hpa'), 1013.25)
                     })
                     

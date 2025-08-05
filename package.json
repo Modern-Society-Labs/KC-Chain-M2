@@ -1,0 +1,14 @@
+{
+  "name": "kc-chain-m2",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "cd lcore-frontend && npm install && npm run build",
+    "start": "npx serve lcore-frontend/dist -s -l $PORT"
+  },
+  "dependencies": {
+    "serve": "^14.2.0"
+  }
+} 
