@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { 
   Home, 
   Smartphone, 
+  Database,
   HelpCircle,
   Shield,
   ExternalLink,
@@ -21,6 +22,11 @@ const navigationItems = [
     name: 'Devices',
     path: '/devices',
     icon: Smartphone
+  },
+  {
+    name: 'Data Explorer',
+    path: '/data-explorer',
+    icon: Database
   },
   {
     name: 'Help',
