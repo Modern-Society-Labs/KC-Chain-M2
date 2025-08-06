@@ -1,7 +1,7 @@
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
-buildContext = "."
+buildContext = "scripts"
 
 [deploy]
 healthcheckPath = "/health"
