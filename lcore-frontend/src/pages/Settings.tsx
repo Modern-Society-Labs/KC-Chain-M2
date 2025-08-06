@@ -277,7 +277,7 @@ export const Settings: React.FC = () => {
           </div>
         </div>
       </div>
-
+      
       {/* Technical Details */}
       <div className="locale-card">
         <h2 className="text-h2 mb-6 flex items-center gap-2">

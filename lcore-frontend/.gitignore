@@ -77,3 +77,4 @@ src/generated/
 
 # Vite
 .vite 
+.vercel
