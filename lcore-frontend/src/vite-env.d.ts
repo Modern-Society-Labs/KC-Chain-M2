@@ -10,4 +10,13 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
+}
+
+// AppKit Web Components
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      'w3m-button': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement>;
+    }
+  }
 } 

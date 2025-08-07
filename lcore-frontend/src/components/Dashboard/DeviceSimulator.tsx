@@ -23,7 +23,9 @@ export const DeviceSimulator: React.FC = () => {
     pauseSimulation,
     resumeSimulation,
     restartSimulation,
-    updateInterval
+    updateInterval,
+    isAdmin,
+    isConnected
   } = useSimulationService();
 
   const [intervalInput, setIntervalInput] = useState(interval.toString());
@@ -138,8 +140,9 @@ export const DeviceSimulator: React.FC = () => {
       return (
         <button
           onClick={handleStart}
-          disabled={updating || !connected}
-          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all bg-locale-blue text-white hover:bg-locale-blue-dark ${(updating || !connected) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={updating || !connected || !isAdmin}
+          className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all bg-locale-blue text-white hover:bg-locale-blue-dark ${(updating || !connected || !isAdmin) ? 'opacity-50 cursor-not-allowed' : ''}`}
+          title={!isConnected ? "Connect wallet first" : !isAdmin ? "Admin access required" : ""}
         >
           {updating ? (
             <>
@@ -163,8 +166,9 @@ export const DeviceSimulator: React.FC = () => {
           {status.paused ? (
             <button
               onClick={handleResume}
-              disabled={updating}
-              className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-accent-green text-white hover:bg-accent-green/80 ${updating ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+              disabled={updating || !isAdmin}
+              className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-accent-green text-white hover:bg-accent-green/80 ${(updating || !isAdmin) ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+              title={!isAdmin ? "Admin access required" : ""}
             >
               <Play className="w-4 h-4" />
               Resume
@@ -172,8 +176,9 @@ export const DeviceSimulator: React.FC = () => {
           ) : (
             <button
               onClick={handlePause}
-              disabled={updating}
-              className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-accent-yellow text-white hover:bg-accent-yellow/80 ${updating ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+              disabled={updating || !isAdmin}
+              className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-accent-yellow text-white hover:bg-accent-yellow/80 ${(updating || !isAdmin) ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+              title={!isAdmin ? "Admin access required" : ""}
             >
               <Pause className="w-4 h-4" />
               Pause
@@ -182,8 +187,9 @@ export const DeviceSimulator: React.FC = () => {
           
           <button
             onClick={handleRestart}
-            disabled={updating}
-            className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-locale-blue text-white hover:bg-locale-blue-dark ${updating ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+            disabled={updating || !isAdmin}
+            className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-locale-blue text-white hover:bg-locale-blue-dark ${(updating || !isAdmin) ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+            title={!isAdmin ? "Admin access required" : ""}
           >
             <RotateCcw className="w-4 h-4" />
             Restart
@@ -191,8 +197,9 @@ export const DeviceSimulator: React.FC = () => {
           
           <button
             onClick={handleStop}
-            disabled={updating}
-            className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-status-error text-white hover:bg-status-error/80 ${updating ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+            disabled={updating || !isAdmin}
+            className={`flex items-center justify-center gap-1 px-2 py-2 rounded-lg font-medium transition-all bg-status-error text-white hover:bg-status-error/80 ${(updating || !isAdmin) ? 'opacity-50 cursor-not-allowed' : ''} text-sm`}
+            title={!isAdmin ? "Admin access required" : ""}
           >
             <Square className="w-4 h-4" />
             Stop
@@ -230,6 +237,23 @@ export const DeviceSimulator: React.FC = () => {
             🔗 Real-time L{'{CORE}'} Integration: {status.total_submissions} submissions
           </div>
         )}
+        
+        {/* Admin Status */}
+        {isConnected && (
+          <div className="mt-2 flex items-center gap-2 text-xs">
+            {isAdmin ? (
+              <span className="text-accent-lime">✓ Admin Access</span>
+            ) : (
+              <span className="text-warm-amber">⚠ View Only Mode</span>
+            )}
+          </div>
+        )}
+        
+        {!isConnected && (
+          <div className="mt-2 text-xs text-urban-grey/60">
+            Connect wallet to control simulator
+          </div>
+        )}
       </div>
 
       {/* Interval Configuration */}
@@ -251,8 +275,9 @@ export const DeviceSimulator: React.FC = () => {
             />
             <button
               onClick={handleIntervalUpdate}
-              disabled={updating || parseFloat(intervalInput) === interval}
+              disabled={updating || parseFloat(intervalInput) === interval || !isAdmin}
               className="btn-secondary px-3"
+              title={!isAdmin ? "Admin access required" : ""}
             >
               <Settings className="w-4 h-4" />
             </button>

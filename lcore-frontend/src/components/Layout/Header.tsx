@@ -1,18 +1,25 @@
 import React from 'react';
 import { 
-  Wallet, 
   Activity, 
   Server,
   Database,
   Wifi,
   Menu
 } from 'lucide-react';
+import { useAccount } from 'wagmi';
+import { modal } from '../../config/wallet';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
+  const { address, isConnected } = useAccount();
+
+  const handleWalletConnect = () => {
+    modal.open();
+  };
+
   return (
     <header className="bg-white border-b border-locale-gray-light px-4 sm:px-6 py-4">
       <div className="flex items-center justify-between">
@@ -78,11 +85,7 @@ export const Header: React.FC<HeaderProps> = ({ onMenuToggle }) => {
         {/* Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3">
           {/* Wallet Connect */}
-          <button className="btn-primary flex items-center gap-2 text-sm sm:text-base px-3 sm:px-6">
-            <Wallet className="w-4 h-4" />
-            <span className="hidden sm:inline">Connect Wallet</span>
-            <span className="sm:hidden">Connect</span>
-          </button>
+          <w3m-button />
         </div>
       </div>
     </header>

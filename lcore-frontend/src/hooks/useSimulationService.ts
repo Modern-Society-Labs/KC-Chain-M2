@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useAccount } from 'wagmi';
+import { isSimulatorAdmin } from '../config/wallet';
+import { toast } from 'react-hot-toast';
 
 interface SimulationStatus {
   running: boolean;
@@ -31,6 +34,9 @@ interface SimulationUpdate {
 const SIMULATION_API_BASE = import.meta.env.VITE_SIMULATION_API_URL || 'http://localhost:8080';
 
 export const useSimulationService = () => {
+  const { address, isConnected } = useAccount();
+  const isAdmin = isSimulatorAdmin(address);
+  
   const [status, setStatus] = useState<SimulationStatus>({
     running: false,
     paused: false,
@@ -103,9 +109,23 @@ export const useSimulationService = () => {
   }, []);
 
   const startSimulation = useCallback(async () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+    
+    if (!isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/start`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${address}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -117,12 +137,21 @@ export const useSimulationService = () => {
       console.error('Error starting simulation:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const stopSimulation = useCallback(async () => {
+    if (!isConnected || !isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/stop`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${address}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -134,12 +163,21 @@ export const useSimulationService = () => {
       console.error('Error stopping simulation:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const pauseSimulation = useCallback(async () => {
+    if (!isConnected || !isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/pause`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${address}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -151,12 +189,21 @@ export const useSimulationService = () => {
       console.error('Error pausing simulation:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const resumeSimulation = useCallback(async () => {
+    if (!isConnected || !isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/resume`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${address}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -168,12 +215,21 @@ export const useSimulationService = () => {
       console.error('Error resuming simulation:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const restartSimulation = useCallback(async () => {
+    if (!isConnected || !isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/restart`, {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${address}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (!response.ok) {
@@ -185,13 +241,19 @@ export const useSimulationService = () => {
       console.error('Error restarting simulation:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const updateInterval = useCallback(async (newInterval: number) => {
+    if (!isConnected || !isAdmin) {
+      toast.error('Access denied: Admin wallet required');
+      return;
+    }
+    
     try {
       const response = await fetch(`${SIMULATION_API_BASE}/simulation/interval`, {
         method: 'PUT',
         headers: {
+          'Authorization': `Bearer ${address}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ interval: newInterval }),
@@ -207,7 +269,7 @@ export const useSimulationService = () => {
       console.error('Error updating interval:', error);
       throw error;
     }
-  }, []);
+  }, [isConnected, isAdmin, address]);
 
   const getHealthStatus = useCallback(async () => {
     try {
@@ -231,6 +293,9 @@ export const useSimulationService = () => {
     resumeSimulation,
     restartSimulation,
     updateInterval,
-    getHealthStatus
+    getHealthStatus,
+    isAdmin,
+    isConnected,
+    address
   };
 };
