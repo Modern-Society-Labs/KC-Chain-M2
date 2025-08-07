@@ -1,5 +1,11 @@
 // L{CORE} Configuration Constants - Locale Network
 
+// Environment-level constants used across the frontend (e.g. Apollo)
+// NOTE: Keep this small and only include runtime-safe values. DO NOT reference
+//     process.env directly because the frontend is built with Vite which inlines
+//     import.meta.env.* variables at compile time.
+
+
 // Network Configuration
 export const LCORE_CONFIG = {
   LOCALE_NETWORK: {
