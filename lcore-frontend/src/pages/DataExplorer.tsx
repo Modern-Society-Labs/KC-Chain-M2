@@ -114,7 +114,7 @@ export const DataExplorer: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="min-h-screen bg-locale-bg p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <motion.div
@@ -124,9 +124,9 @@ export const DataExplorer: React.FC = () => {
         >
           <div className="flex items-center gap-3 mb-4">
             <Database className="w-8 h-8 text-accent-cyan" />
-            <h1 className="text-3xl font-bold text-white">Data Explorer</h1>
+            <h1 className="text-3xl font-bold text-locale-blue">Data Explorer</h1>
           </div>
-          <p className="text-slate-400">
+          <p className="text-urban-grey/70">
             Query and decrypt IoT sensor data from the Locale Network
           </p>
         </motion.div>
@@ -145,7 +145,7 @@ export const DataExplorer: React.FC = () => {
               <select
                 value={selectedDeviceType}
                 onChange={(e) => setSelectedDeviceType(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent-cyan"
+                className="select-field"
               >
                 <option value="all">All Device Types</option>
                 {DEMO_DEVICE_TYPES.map(type => (
@@ -164,12 +164,12 @@ export const DataExplorer: React.FC = () => {
                 placeholder="Search devices or domains..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white flex-1 focus:outline-none focus:ring-2 focus:ring-accent-cyan"
+                className="input-field flex-1"
               />
             </div>
 
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-2 bg-slate-700 rounded-lg p-1">
+            <div className="flex items-center gap-2 bg-cloud-white/50 rounded-locale p-1">
               {[
                 { key: 'raw', label: 'Raw', icon: Database },
                 { key: 'decrypted', label: 'Decrypted', icon: Unlock },
@@ -180,8 +180,8 @@ export const DataExplorer: React.FC = () => {
                   onClick={() => setViewMode(key as any)}
                   className={`flex items-center gap-2 px-3 py-2 rounded transition-colors ${
                     viewMode === key
-                      ? 'bg-accent-cyan text-slate-900'
-                      : 'text-slate-300 hover:text-white'
+                      ? 'bg-locale-blue text-white'
+                      : 'text-urban-grey hover:text-locale-blue'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -239,29 +239,29 @@ export const DataExplorer: React.FC = () => {
         >
           {viewMode === 'raw' && (
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-locale-blue mb-4 flex items-center gap-2">
                 <Lock className="w-5 h-5 text-red-400" />
                 Raw Encrypted Inputs ({inputRecords.length})
               </h3>
               <div className="space-y-3">
                 {inputRecords.map((record) => (
-                  <div key={record.index} className="bg-slate-700 rounded-lg p-4">
+                  <div key={record.index} className="locale-card bg-cloud-white/80 border border-grid-lines p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-accent-cyan font-mono">#{record.index}</span>
-                      <span className="text-slate-400 text-sm">{record.timestamp}</span>
+                      <span className="text-smart-city-teal font-mono">#{record.index}</span>
+                      <span className="text-urban-grey/60 text-sm">{record.timestamp}</span>
                     </div>
-                    <div className="text-sm text-slate-300">
+                    <div className="text-sm text-urban-grey">
                       <p><strong>Device:</strong> {record.payload.device_id}</p>
                       <p><strong>Status:</strong> 
                         <span className={`ml-2 px-2 py-1 rounded text-xs ${
                           record.status === 'Processed' 
-                            ? 'bg-green-900 text-green-300' 
-                            : 'bg-yellow-900 text-yellow-300'
+                            ? 'bg-accent-lime/20 text-accent-lime' 
+                            : 'bg-warm-amber/20 text-warm-amber'
                         }`}>
                           {record.status}
                         </span>
                       </p>
-                      <p className="mt-2 font-mono text-xs text-slate-500 truncate">
+                      <p className="mt-2 font-mono text-xs text-urban-grey/60 truncate">
                         {record.payload.encrypted_payload}
                       </p>
                     </div>
@@ -273,7 +273,7 @@ export const DataExplorer: React.FC = () => {
 
           {viewMode === 'decrypted' && (
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-locale-blue mb-4 flex items-center gap-2">
                 <Unlock className="w-5 h-5 text-green-400" />
                 Decrypted Sensor Readings ({filteredData.length})
               </h3>
@@ -281,14 +281,14 @@ export const DataExplorer: React.FC = () => {
                 {filteredData.map((data, index) => {
                   const deviceType = DEMO_DEVICE_TYPES.find(t => t.id === data.domain);
                   return (
-                    <div key={index} className="bg-slate-700 rounded-lg p-4">
+                    <div key={index} className="locale-card bg-cloud-white/80 border border-grid-lines p-4">
                       <div className="flex items-center gap-2 mb-3">
                         <span className={`text-2xl ${deviceType?.color}`}>
                           {deviceType?.icon || '📊'}
                         </span>
                         <div>
-                          <h4 className="text-white font-medium">{deviceType?.name}</h4>
-                          <p className="text-slate-400 text-xs font-mono">
+                          <h4 className="text-locale-blue font-medium">{deviceType?.name}</h4>
+                          <p className="text-urban-grey/60 text-xs font-mono">
                             {data.device_id.replace('did:lcore:', '')}
                           </p>
                         </div>
@@ -297,25 +297,25 @@ export const DataExplorer: React.FC = () => {
                       <div className="space-y-2 text-sm">
                         {data.temperature && (
                           <div className="flex justify-between">
-                            <span className="text-slate-400">Temperature:</span>
-                            <span className="text-white">{data.temperature}°C</span>
+                            <span className="text-urban-grey/70">Temperature:</span>
+                            <span className="text-urban-grey">{data.temperature}°C</span>
                           </div>
                         )}
                         {data.humidity && (
                           <div className="flex justify-between">
-                            <span className="text-slate-400">Humidity:</span>
-                            <span className="text-white">{data.humidity}%</span>
+                            <span className="text-urban-grey/70">Humidity:</span>
+                            <span className="text-urban-grey">{data.humidity}%</span>
                           </div>
                         )}
                         {data.transaction_value && (
                           <div className="flex justify-between">
-                            <span className="text-slate-400">Transaction:</span>
-                            <span className="text-white">${data.transaction_value}</span>
+                            <span className="text-urban-grey/70">Transaction:</span>
+                            <span className="text-urban-grey">${data.transaction_value}</span>
                           </div>
                         )}
-                        <div className="flex justify-between pt-2 border-t border-slate-600">
-                          <span className="text-slate-400">Privacy Score:</span>
-                          <span className="text-green-400">{data.privacy_metadata.privacy_score}%</span>
+                        <div className="flex justify-between pt-2 border-t border-grid-lines">
+                          <span className="text-urban-grey/70">Privacy Score:</span>
+                          <span className="text-accent-lime">{data.privacy_metadata.privacy_score}%</span>
                         </div>
                       </div>
                     </div>
@@ -327,7 +327,7 @@ export const DataExplorer: React.FC = () => {
 
           {viewMode === 'aggregated' && (
             <div>
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <h3 className="text-xl font-semibold text-locale-blue mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-accent-purple" />
                 Aggregated Analytics ({aggregatedData.length} domains)
               </h3>
@@ -335,39 +335,39 @@ export const DataExplorer: React.FC = () => {
                 {aggregatedData.map((data, index) => {
                   const deviceType = DEMO_DEVICE_TYPES.find(t => t.id === data.domain);
                   return (
-                    <div key={index} className="bg-slate-700 rounded-lg p-6">
+                    <div key={index} className="locale-card bg-cloud-white/80 border border-grid-lines p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <span className={`text-3xl ${deviceType?.color}`}>
                           {deviceType?.icon || '📊'}
                         </span>
                         <div>
-                          <h4 className="text-white font-semibold text-lg">{deviceType?.name}</h4>
-                          <p className="text-slate-400">{data.device_count} devices, {data.total_readings} readings</p>
+                          <h4 className="text-locale-blue font-semibold text-lg">{deviceType?.name}</h4>
+                          <p className="text-urban-grey/70">{data.device_count} devices, {data.total_readings} readings</p>
                         </div>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
                         {data.avg_temperature && (
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-white">{data.avg_temperature}°C</p>
-                            <p className="text-slate-400 text-sm">Avg Temperature</p>
+                            <p className="text-2xl font-bold text-locale-blue">{data.avg_temperature}°C</p>
+                            <p className="text-urban-grey/70 text-sm">Avg Temperature</p>
                           </div>
                         )}
                         {data.avg_transaction_value && (
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-white">${data.avg_transaction_value}</p>
-                            <p className="text-slate-400 text-sm">Avg Transaction</p>
+                            <p className="text-2xl font-bold text-smart-city-teal">${data.avg_transaction_value}</p>
+                            <p className="text-urban-grey/70 text-sm">Avg Transaction</p>
                           </div>
                         )}
                         {data.avg_signal_strength && (
                           <div className="text-center">
-                            <p className="text-2xl font-bold text-white">{data.avg_signal_strength}dBm</p>
-                            <p className="text-slate-400 text-sm">Avg Signal</p>
+                            <p className="text-2xl font-bold text-warm-amber">{data.avg_signal_strength}dBm</p>
+                            <p className="text-urban-grey/70 text-sm">Avg Signal</p>
                           </div>
                         )}
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-green-400">{data.privacy_score}%</p>
-                          <p className="text-slate-400 text-sm">Privacy Score</p>
+                          <p className="text-2xl font-bold text-accent-lime">{data.privacy_score}%</p>
+                          <p className="text-urban-grey/70 text-sm">Privacy Score</p>
                         </div>
                       </div>
                     </div>
@@ -382,9 +382,9 @@ export const DataExplorer: React.FC = () => {
             (viewMode === 'decrypted' && decryptedData.length === 0) ||
             (viewMode === 'aggregated' && aggregatedData.length === 0)) && (
             <div className="text-center py-12">
-              <Eye className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-slate-400 mb-2">No Data Available</h3>
-              <p className="text-slate-500">
+              <Eye className="w-16 h-16 text-urban-grey/40 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-urban-grey mb-2">No Data Available</h3>
+              <p className="text-urban-grey/70">
                 Click one of the action buttons above to load and explore IoT data
               </p>
             </div>
