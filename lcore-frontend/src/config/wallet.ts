@@ -42,9 +42,8 @@ export const wagmiConfig = wagmiAdapter.wagmiConfig
 
 // Whitelist for IoT simulator control
 export const SIMULATOR_ADMIN_WALLETS = [
-  '0x6D9823a18502AC88B0BC6b8FDDC19c28A69E05BD', // Replace with actual admin wallet addresses
-  '0x304Fb7fcc3a41fCe12e33d0E1d63B6b6De79FA8D', // Add more admin wallets as needed
-  // Add your admin wallet addresses here
+  '0x0a9871196E546a277072a04a6E1C1bC2CC25aaA2', // Primary admin wallet
+  // Add more admin wallets as needed
 ].map(addr => addr.toLowerCase())
 
 export function isSimulatorAdmin(address: string | undefined): boolean {
