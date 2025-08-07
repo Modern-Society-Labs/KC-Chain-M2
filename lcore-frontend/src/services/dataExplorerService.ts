@@ -38,8 +38,8 @@ export interface AggregatedData {
   privacy_score: number;
 }
 
-const API_BASE_URL = process.env.VITE_DATA_EXPLORER_API_URL || 
-  (process.env.NODE_ENV === 'production' 
+const API_BASE_URL = import.meta.env.VITE_DATA_EXPLORER_API_URL || 
+  (import.meta.env.MODE === 'production' 
     ? 'https://data-explorer-api-production.up.railway.app' 
     : 'http://localhost:8091');
 
