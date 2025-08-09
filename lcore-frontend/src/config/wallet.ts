@@ -1,7 +1,7 @@
 // AppKit Wallet Configuration for L{CORE}
 import { createAppKit } from '@reown/appkit/react'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { localeNetwork } from './networks'
+import { localeNetwork } from './networks.js'
 import { QueryClient } from '@tanstack/react-query'
 
 // Get project ID from environment
@@ -34,7 +34,20 @@ export const modal = createAppKit({
     '--w3m-accent': '#3b82f6', // Locale blue
     '--w3m-border-radius-master': '8px',
     '--w3m-font-family': 'Inter, system-ui, sans-serif'
-  }
+  },
+  featuredWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+    '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa'  // Coinbase Wallet
+  ],
+  includeWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+    '1ae92b26df02f0abca6304df07debccd18262fdf5fe82daa81593582dac9a369', // Rainbow
+    'fd20dc426fb37566d803205b19bbc1d4096b248ac04548e3cfb6b3a38bd033aa', // Coinbase Wallet
+    '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0', // Trust Wallet
+    'c03dfee351b6fcc421b4494ea33b9d4b92a984f87aa76d1663bb28705e95034a'  // Uniswap Wallet
+  ],
+  enableWallets: true
 })
 
 export const queryClient = new QueryClient()
