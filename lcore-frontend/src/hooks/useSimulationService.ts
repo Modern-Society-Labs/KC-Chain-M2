@@ -31,7 +31,14 @@ interface SimulationUpdate {
   data: Record<string, any>;
 }
 
-const SIMULATION_API_BASE = import.meta.env.VITE_SIMULATION_API_URL || 'http://localhost:8080';
+// Determine API bases for HTTP and WebSocket
+const ENV_BASE = import.meta.env.VITE_SIMULATION_API_URL || 'http://localhost:8080';
+const isVercel = typeof window !== 'undefined' && window.location.hostname.endsWith('vercel.app');
+
+// Use same-origin relative path on Vercel (rewritten via vercel.json),
+// fall back to ENV_BASE elsewhere. Keep WebSocket hitting ENV_BASE directly.
+const HTTP_BASE = isVercel ? '' : ENV_BASE;
+const WS_BASE = ENV_BASE;
 
 export const useSimulationService = () => {
   const { address, isConnected } = useAccount();
@@ -54,7 +61,7 @@ export const useSimulationService = () => {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    const wsUrl = SIMULATION_API_BASE.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://');
+    const wsUrl = WS_BASE.replace(/^https:\/\//, 'wss://').replace(/^http:\/\//, 'ws://');
     const ws = new WebSocket(`${wsUrl}/ws`);
     
     ws.onopen = () => {
@@ -120,7 +127,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/start`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/start`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -146,7 +153,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/stop`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/stop`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -172,7 +179,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/pause`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/pause`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -198,7 +205,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/resume`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/resume`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -224,7 +231,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/restart`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/restart`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -250,7 +257,7 @@ export const useSimulationService = () => {
     }
     
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/simulation/interval`, {
+      const response = await fetch(`${HTTP_BASE}/simulation/interval`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${address}`,
@@ -273,7 +280,7 @@ export const useSimulationService = () => {
 
   const getHealthStatus = useCallback(async () => {
     try {
-      const response = await fetch(`${SIMULATION_API_BASE}/health`);
+      const response = await fetch(`${HTTP_BASE}/health`);
       return await response.json();
     } catch (error) {
       console.error('Error getting health status:', error);

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/simulation/:path*",
+      "destination": "https://iot-data-script-production.up.railway.app/simulation/:path*"
+    },
+    {
+      "source": "/health",
+      "destination": "https://iot-data-script-production.up.railway.app/health"
+    }
+  ]
+}
+
