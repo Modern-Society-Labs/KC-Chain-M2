@@ -38,6 +38,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import logging
+import shutil
 import hashlib
 import struct
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM, ChaCha20Poly1305
@@ -518,6 +519,18 @@ class LCoreContinuousSimulator:
             ]
             
             logger.info(f"🔐 Submitting encrypted transaction for device {device_id} (counter: {counter}) from wallet {wallet_info['address'][:8]}...")
+
+            # Ensure Foundry 'cast' CLI is installed and available
+            if shutil.which("cast") is None:
+                missing_msg = (
+                    "Foundry 'cast' CLI not found in PATH. Install Foundry inside the runtime "
+                    "environment (e.g., run 'curl -L https://foundry.paradigm.xyz | bash && /root/.foundry/bin/foundryup' "
+                    "and ensure '/root/.foundry/bin' is on PATH) or switch to a web3.py-based submission."
+                )
+                logger.error(missing_msg)
+                self.status.failed_submissions += 1
+                # Raise FileNotFoundError to surface a clear reason upstream
+                raise FileNotFoundError(missing_msg)
             
             # Execute cast command
             import subprocess
@@ -855,9 +868,17 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend integration
+# Allow local dev and the deployed Vercel frontend
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "https://lcore-frontend.vercel.app"
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # Frontend URLs
+    allow_origins=allowed_origins,
+    allow_origin_regex=r"https://.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
