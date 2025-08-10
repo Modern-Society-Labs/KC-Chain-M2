@@ -4,9 +4,19 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Install system dependencies quickly
+# Install system dependencies and Foundry (for `cast` CLI)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    ca-certificates \
+    git \
+    bash \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Foundry and ensure `cast` is on PATH
+SHELL ["/bin/bash", "-lc"]
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    /root/.foundry/bin/foundryup
+ENV PATH="/root/.foundry/bin:${PATH}"
 
 # Copy requirements first for better caching
 COPY requirements.txt .
