@@ -91,14 +91,6 @@ export const CommunityMetrics: React.FC = () => {
           );
         })}
       </div>
-      
-      {status.running && connected && !status.paused && (
-        <div className="mt-4 p-3 bg-accent-lime/10 rounded-locale">
-          <div className="text-sm text-accent-lime font-medium">
-            📡 Live simulation active
-          </div>
-        </div>
-      )}
     </div>
   );
 }; 

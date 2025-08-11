@@ -62,14 +62,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen = true, onClose }) => {
         </div>
       </div>
       
-      {/* Privacy Indicator */}
-      <div className="p-4 border-b border-locale-gray-light">
-        <div className="flex items-center gap-2 text-sm">
-          <Shield className="w-4 h-4 text-accent-green" />
-          <span className="text-accent-green font-medium">Privacy Protected</span>
-        </div>
-      </div>
-      
       {/* Navigation Menu */}
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
