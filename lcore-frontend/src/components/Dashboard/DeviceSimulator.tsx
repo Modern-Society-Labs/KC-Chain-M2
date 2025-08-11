@@ -329,8 +329,8 @@ export const DeviceSimulator: React.FC = () => {
             <Zap className="w-4 h-4" />
             Active Devices ({devices.length})
           </h4>
-          <div className="space-y-2 max-h-40 overflow-y-auto">
-            {devices.slice(0, 5).map((device) => (
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {devices.map((device) => (
               <div key={device.device_id} className="flex items-center justify-between p-2 bg-cloud-white/30 rounded-locale text-sm">
                 <div>
                   <div className="font-medium text-urban-grey">
@@ -352,11 +352,6 @@ export const DeviceSimulator: React.FC = () => {
                 </div>
               </div>
             ))}
-            {devices.length > 5 && (
-              <div className="text-center text-xs text-urban-grey/60 py-2">
-                +{devices.length - 5} more devices
-              </div>
-            )}
           </div>
         </div>
       )}

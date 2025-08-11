@@ -171,13 +171,14 @@ export const DataExplorer: React.FC = () => {
             {/* View Mode Toggle */}
             <div className="flex items-center gap-2 bg-cloud-white/50 rounded-locale p-1">
               {[
-                { key: 'raw', label: 'Raw', icon: Database },
-                { key: 'decrypted', label: 'Decrypted', icon: Unlock },
-                { key: 'aggregated', label: 'Analytics', icon: BarChart3 }
-              ].map(({ key, label, icon: Icon }) => (
+                { key: 'raw', label: 'Raw', icon: Database, disabled: false },
+                { key: 'decrypted', label: 'Decrypted', icon: Unlock, disabled: false },
+                { key: 'aggregated', label: 'Analytics', icon: BarChart3, disabled: true }
+              ].map(({ key, label, icon: Icon, disabled }) => (
                 <button
                   key={key}
-                  onClick={() => setViewMode(key as any)}
+                  onClick={() => !disabled && setViewMode(key as any)}
+                  disabled={disabled}
                   className={`flex items-center gap-2 px-3 py-2 rounded transition-colors ${
                     viewMode === key
                       ? 'bg-locale-blue text-white'
@@ -221,7 +222,7 @@ export const DataExplorer: React.FC = () => {
 
           <button
             onClick={generateAggregatedReport}
-            disabled={loading}
+            disabled={true}
             className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <BarChart3 className="w-5 h-5" />

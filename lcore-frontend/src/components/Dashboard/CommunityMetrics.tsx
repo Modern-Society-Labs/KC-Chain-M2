@@ -19,7 +19,10 @@ export const CommunityMetrics: React.FC = () => {
     const deviceOwnerRatio = status.devices_active > 0 ? (status.devices_active / 55).toFixed(2) : '0.00';
 
     return {
-      activeDevices: status.devices_active.toString(),
+      // Prefer live devices length when available to avoid stale count
+      activeDevices: (devices?.length ?? 0) > 0
+        ? devices.length.toString()
+        : status.devices_active.toString(),
       dataPointsPerHour: dataPointsPerHour.toString(),
       nodeUptime: `${uptimeHours}h`,
       deviceOwnerRatio: deviceOwnerRatio,

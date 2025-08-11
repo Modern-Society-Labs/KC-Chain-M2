@@ -85,6 +85,8 @@ export const Devices: React.FC = () => {
   const { status, devices: simulationDevices, connected } = useSimulationService();
   const [devicesData, setDevicesData] = useState<DeviceData[]>([]);
   const [filteredDevices, setFilteredDevices] = useState<DeviceData[]>([]);
+  const pageSize = 24;
+  const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [showOnlineOnly, setShowOnlineOnly] = useState(false);
@@ -117,6 +119,7 @@ export const Devices: React.FC = () => {
     });
 
     setDevicesData(mergedData);
+    setPage(1);
   }, [simulationDevices, status]);
 
   // Filter devices based on search and filters
@@ -145,6 +148,7 @@ export const Devices: React.FC = () => {
   const onlineDevices = devicesData.filter(d => d.isOnline).length;
   const totalInputs = devicesData.reduce((sum, d) => sum + d.inputCount, 0);
   const categories = ['all', ...Array.from(new Set(devicesData.map(d => d.device_category)))];
+  const pagedDevices = filteredDevices.slice(0, page * pageSize);
 
   return (
     <div className="space-y-6">
@@ -244,7 +248,7 @@ export const Devices: React.FC = () => {
 
       {/* Device Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {filteredDevices.map((device) => {
+        {pagedDevices.map((device) => {
           const IconComponent = getDeviceIcon(device.device_category);
           const categoryColors = getCategoryColor(device.device_category);
           const deviceName = getDeviceName(device.device_id, device.device_category);
@@ -328,6 +332,16 @@ export const Devices: React.FC = () => {
             </div>
           );
         })}
+        {pagedDevices.length < filteredDevices.length && (
+          <div className="col-span-full flex justify-center">
+            <button
+              className="px-4 py-2 text-sm bg-cloud-white/70 border border-grid-lines rounded-locale hover:bg-cloud-white"
+              onClick={() => setPage(p => p + 1)}
+            >
+              Load more devices
+            </button>
+          </div>
+        )}
       </div>
 
       {/* No Results */}
