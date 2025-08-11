@@ -342,12 +342,10 @@ export const DeviceSimulator: React.FC = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-smart-city-teal">
-                    {device.total_submissions}
+                    {device.total_submissions.toLocaleString()}
                   </div>
-                  <div className={`text-xs ${
-                    device.status === 'active' ? 'text-accent-lime' : 'text-urban-grey/60'
-                  }`}>
-                    {device.status}
+                  <div className="text-xs text-urban-grey/60">
+                    inputs
                   </div>
                 </div>
               </div>
