@@ -105,7 +105,7 @@ export const Settings: React.FC = () => {
               and network activity. Data is fetched live from the blockchain via RPC calls.
             </p>
             <div className="text-xs text-locale-gray/80">
-              <strong>Data Source:</strong> Ethereum RPC • <strong>Update Frequency:</strong> 30 seconds
+              <strong>Data Source:</strong> Locale Network-Devnet RPC • <strong>Update Frequency:</strong> 30 seconds
             </div>
           </div>
 
@@ -120,7 +120,7 @@ export const Settings: React.FC = () => {
               submissions to the InputBox contract. Shows device-specific information when available.
             </p>
             <div className="text-xs text-locale-gray/80">
-              <strong>Data Source:</strong> Direct blockchain RPC • <strong>Update Frequency:</strong> 30 seconds
+              <strong>Data Source:</strong> Locale Network-Devnet RPC • <strong>Update Frequency:</strong> 30 seconds
             </div>
           </div>
 
@@ -150,8 +150,8 @@ export const Settings: React.FC = () => {
         
         <div className="space-y-4">
           <p className="text-sm text-locale-gray">
-            The Device Registry provides a comprehensive view of all 67 IoT devices in the network. 
-            Each device has its own Ethereum wallet and submits real encrypted data to the blockchain.
+            The Device Registry provides a comprehensive view of up to 67 IoT devices in the network. 
+            Each device has its own wallet and submits real encrypted data to the blockchain. For stability, the demo starts with a capped active set (default 20) and ramps up.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -285,11 +285,11 @@ export const Settings: React.FC = () => {
           Technical Implementation
         </h2>
         
-        <div className="space-y-4 text-sm text-locale-gray">
+          <div className="space-y-4 text-sm text-locale-gray">
           <div>
             <h4 className="font-medium text-locale-gray-dark mb-2">Blockchain Infrastructure</h4>
             <p className="mb-2">
-              Built on Ethereum-compatible devnet with Alchemy RPC provider. All IoT data submissions 
+              Built on Locale Network-Devnet RPC. All IoT data submissions 
               are verified on-chain through the InputBox contract at address:
             </p>
             <code className="bg-locale-gray-light p-2 rounded font-mono text-xs block">
@@ -301,7 +301,7 @@ export const Settings: React.FC = () => {
             <h4 className="font-medium text-locale-gray-dark mb-2">Frontend Technology</h4>
             <p>
               React 18 + TypeScript + Tailwind CSS dashboard with real-time data fetching, 
-              responsive design, and Vite for optimal development experience.
+              responsive design, and Vite for optimal development experience. Wallet connection uses AppKit/Wagmi.
             </p>
           </div>
           

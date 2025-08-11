@@ -229,6 +229,9 @@ export const DataExplorer: React.FC = () => {
             Generate Analytics
             {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
           </button>
+          <div className="text-xs text-urban-grey/60 text-center md:text-left">
+            Current limitations: Data Explorer Analytics is disabled for now. Raw and Decrypted views remain available.
+          </div>
         </motion.div>
 
         {/* Data Display */}
